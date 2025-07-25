@@ -11,8 +11,22 @@ import {
   Clock,
   Check
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export const FeatureSection = () => {
+  const { toast } = useToast();
+
+  const handleStartTrial = () => {
+    const uploadSection = document.getElementById('upload');
+    if (uploadSection) {
+      uploadSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    toast({
+      title: "Free Trial Started!",
+      description: "Upload your first file to begin your free trial.",
+    });
+  };
+
   const features = [
     {
       icon: Upload,
@@ -118,7 +132,12 @@ export const FeatureSection = () => {
               ))}
             </div>
             <div className="mt-8">
-              <Button variant="success" size="lg">
+              <Button 
+                variant="success" 
+                size="lg"
+                onClick={handleStartTrial}
+                aria-label="Start your free trial of Result Genie Pro"
+              >
                 Start Your Free Trial
                 <Zap className="w-5 h-5 ml-2" />
               </Button>

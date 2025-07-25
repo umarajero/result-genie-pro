@@ -175,11 +175,22 @@ export const UploadSection = () => {
                   </p>
                   
                   <div className="flex justify-center gap-4">
-                    <Button variant="success">
+                    <Button 
+                      variant="success"
+                      onClick={() => toast({
+                        title: "Generating Certificates",
+                        description: "Processing student data to create personalized certificates...",
+                      })}
+                      aria-label="Generate certificates for all students"
+                    >
                       Generate Certificates
                       <Award className="w-4 h-4 ml-2" />
                     </Button>
-                    <Button variant="outline" onClick={resetUpload}>
+                    <Button 
+                      variant="outline" 
+                      onClick={resetUpload}
+                      aria-label="Upload another file"
+                    >
                       Upload Another File
                     </Button>
                   </div>
@@ -197,7 +208,11 @@ export const UploadSection = () => {
                   <p className="text-muted-foreground mb-6">
                     Please check your file format and try again
                   </p>
-                  <Button variant="outline" onClick={resetUpload}>
+                  <Button 
+                    variant="outline" 
+                    onClick={resetUpload}
+                    aria-label="Try uploading file again"
+                  >
                     Try Again
                   </Button>
                 </div>
@@ -230,7 +245,15 @@ export const UploadSection = () => {
               <CardContent className="p-6">
                 <Download className="w-8 h-8 text-secondary mx-auto mb-3" />
                 <h3 className="font-semibold mb-2">Sample Template</h3>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => toast({
+                    title: "Downloading Template",
+                    description: "Sample Excel template will be downloaded shortly.",
+                  })}
+                  aria-label="Download sample Excel template"
+                >
                   Download
                 </Button>
               </CardContent>

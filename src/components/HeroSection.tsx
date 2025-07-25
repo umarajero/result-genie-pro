@@ -1,8 +1,31 @@
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Upload, Award, Users } from "lucide-react";
 import heroImage from "@/assets/hero-education.jpg";
+import { useToast } from "@/hooks/use-toast";
 
 export const HeroSection = () => {
+  const { toast } = useToast();
+
+  const handleGetStarted = () => {
+    const uploadSection = document.getElementById('upload');
+    if (uploadSection) {
+      uploadSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    toast({
+      title: "Let's Get Started!",
+      description: "Upload your student data to begin generating certificates.",
+    });
+  };
+
+  const handleWatchDemo = () => {
+    toast({
+      title: "Demo Video",
+      description: "Opening demo video in new window...",
+    });
+    // In a real app, this would open a demo video
+    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+  };
+
   return (
     <section className="relative min-h-screen bg-gradient-hero overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
@@ -41,11 +64,22 @@ export const HeroSection = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" className="group">
+              <Button 
+                variant="hero" 
+                size="lg" 
+                className="group" 
+                onClick={handleGetStarted}
+                aria-label="Start using Result Genie Pro for free"
+              >
                 Get Started Free
                 <GraduationCap className="w-5 h-5 ml-2 group-hover:animate-float" />
               </Button>
-              <Button variant="academic" size="lg">
+              <Button 
+                variant="academic" 
+                size="lg"
+                onClick={handleWatchDemo}
+                aria-label="Watch demonstration video"
+              >
                 Watch Demo
               </Button>
             </div>

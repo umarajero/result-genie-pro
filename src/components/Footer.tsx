@@ -1,8 +1,44 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GraduationCap, Mail, Phone, MapPin, Facebook, Twitter, Linkedin } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export const Footer = () => {
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+
+  const handleSocialClick = (platform: string) => {
+    toast({
+      title: `Opening ${platform}`,
+      description: `Redirecting to our ${platform} page...`,
+    });
+  };
+
+  const handleSubscribe = () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address to subscribe.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    toast({
+      title: "Subscribed Successfully!",
+      description: "Thank you for subscribing to our newsletter.",
+    });
+    setEmail("");
+  };
+
+  const handleLinkClick = (linkName: string) => {
+    toast({
+      title: `Opening ${linkName}`,
+      description: `Redirecting to ${linkName} page...`,
+    });
+  };
+
   return (
     <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-4 py-16">
@@ -22,13 +58,28 @@ export const Footer = () => {
               and seamless parent communication.
             </p>
             <div className="flex gap-3">
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => handleSocialClick("Facebook")}
+                aria-label="Follow us on Facebook"
+              >
                 <Facebook className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => handleSocialClick("Twitter")}
+                aria-label="Follow us on Twitter"
+              >
                 <Twitter className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => handleSocialClick("LinkedIn")}
+                aria-label="Follow us on LinkedIn"
+              >
                 <Linkedin className="w-4 h-4" />
               </Button>
             </div>
@@ -38,18 +89,30 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-foreground">Product</h4>
             <div className="space-y-2">
-              <a href="#" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <button 
+                className="block text-muted-foreground hover:text-foreground transition-colors text-left"
+                onClick={() => handleLinkClick("Features")}
+              >
                 Features
-              </a>
-              <a href="#" className="block text-muted-foreground hover:text-foreground transition-colors">
+              </button>
+              <button 
+                className="block text-muted-foreground hover:text-foreground transition-colors text-left"
+                onClick={() => handleLinkClick("Pricing")}
+              >
                 Pricing
-              </a>
-              <a href="#" className="block text-muted-foreground hover:text-foreground transition-colors">
+              </button>
+              <button 
+                className="block text-muted-foreground hover:text-foreground transition-colors text-left"
+                onClick={() => handleLinkClick("Templates")}
+              >
                 Templates
-              </a>
-              <a href="#" className="block text-muted-foreground hover:text-foreground transition-colors">
+              </button>
+              <button 
+                className="block text-muted-foreground hover:text-foreground transition-colors text-left"
+                onClick={() => handleLinkClick("API Docs")}
+              >
                 API Docs
-              </a>
+              </button>
             </div>
           </div>
 
@@ -57,18 +120,30 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-foreground">Support</h4>
             <div className="space-y-2">
-              <a href="#" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <button 
+                className="block text-muted-foreground hover:text-foreground transition-colors text-left"
+                onClick={() => handleLinkClick("Help Center")}
+              >
                 Help Center
-              </a>
-              <a href="#" className="block text-muted-foreground hover:text-foreground transition-colors">
+              </button>
+              <button 
+                className="block text-muted-foreground hover:text-foreground transition-colors text-left"
+                onClick={() => handleLinkClick("Contact Us")}
+              >
                 Contact Us
-              </a>
-              <a href="#" className="block text-muted-foreground hover:text-foreground transition-colors">
+              </button>
+              <button 
+                className="block text-muted-foreground hover:text-foreground transition-colors text-left"
+                onClick={() => handleLinkClick("Video Tutorials")}
+              >
                 Video Tutorials
-              </a>
-              <a href="#" className="block text-muted-foreground hover:text-foreground transition-colors">
+              </button>
+              <button 
+                className="block text-muted-foreground hover:text-foreground transition-colors text-left"
+                onClick={() => handleLinkClick("System Status")}
+              >
                 System Status
-              </a>
+              </button>
             </div>
           </div>
 
@@ -79,8 +154,19 @@ export const Footer = () => {
               Get the latest updates on new features and education insights.
             </p>
             <div className="space-y-2">
-              <Input placeholder="Enter your email" />
-              <Button variant="default" className="w-full">
+              <Input 
+                placeholder="Enter your email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
+                aria-label="Email address for newsletter subscription"
+              />
+              <Button 
+                variant="default" 
+                className="w-full"
+                onClick={handleSubscribe}
+                aria-label="Subscribe to newsletter"
+              >
                 Subscribe
               </Button>
             </div>
@@ -111,15 +197,24 @@ export const Footer = () => {
             © 2024 Result Genie Pro. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+            <button 
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => handleLinkClick("Privacy Policy")}
+            >
               Privacy Policy
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+            </button>
+            <button 
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => handleLinkClick("Terms of Service")}
+            >
               Terms of Service
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+            </button>
+            <button 
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => handleLinkClick("Cookie Policy")}
+            >
               Cookie Policy
-            </a>
+            </button>
           </div>
         </div>
       </div>

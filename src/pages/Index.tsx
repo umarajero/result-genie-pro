@@ -10,8 +10,12 @@ const Index = () => {
       <Header />
       <main>
         <HeroSection />
-        <FeatureSection />
-        <UploadSection />
+        <section id="features">
+          <FeatureSection />
+        </section>
+        <section id="upload">
+          <UploadSection />
+        </section>
       </main>
       <Footer />
     </div>

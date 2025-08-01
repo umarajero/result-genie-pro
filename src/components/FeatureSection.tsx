@@ -12,9 +12,13 @@ import {
   Check
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { CertificateTemplate } from "./CertificateTemplate";
+import { useState } from "react";
 
 export const FeatureSection = () => {
   const { toast } = useToast();
+  const [showCertificate, setShowCertificate] = useState(false);
+  const [showParentPortal, setShowParentPortal] = useState(false);
 
   const handleStartTrial = () => {
     const uploadSection = document.getElementById('upload');
@@ -43,6 +47,46 @@ export const FeatureSection = () => {
       title: "Result Processing Available!",
       description: "Upload your student data first to enable automated processing.",
     });
+  };
+
+  const handleCertificateGeneration = () => {
+    setShowCertificate(true);
+    toast({
+      title: "Certificate Generated!",
+      description: "Sample certificate created with demo student data.",
+    });
+  };
+
+  const handleParentPortal = () => {
+    setShowParentPortal(true);
+    toast({
+      title: "Parent Portal Activated!",
+      description: "Demo portal showing secure access for parents.",
+    });
+  };
+
+  // Sample data for certificate
+  const sampleCertificateData = {
+    studentName: "John Smith",
+    className: "Grade 10A",
+    session: "2023/2024",
+    term: "First Term",
+    position: "3rd",
+    totalStudents: 45,
+    schoolName: "Excellence Academy",
+    schoolAddress: "123 Education Street, Learning City",
+    schoolContact: "Tel: +234-801-234-5678 | Email: info@excellenceacademy.edu",
+    subjects: [
+      { name: "Mathematics", score: 85, grade: "A" },
+      { name: "English Language", score: 78, grade: "B" },
+      { name: "Physics", score: 92, grade: "A" },
+      { name: "Chemistry", score: 88, grade: "A" },
+      { name: "Biology", score: 76, grade: "B" },
+      { name: "Economics", score: 82, grade: "A" },
+      { name: "Government", score: 74, grade: "B" },
+      { name: "Literature", score: 79, grade: "B" }
+    ],
+    dateIssued: new Date().toLocaleDateString()
   };
 
   const features = [
@@ -120,6 +164,8 @@ export const FeatureSection = () => {
             const getClickHandler = () => {
               if (feature.title === "Smart File Import") return handleSmartImport;
               if (feature.title === "Result Processing") return handleResultProcessing;
+              if (feature.title === "Certificate Generation") return handleCertificateGeneration;
+              if (feature.title === "Parent Portal") return handleParentPortal;
               return undefined;
             };
 
@@ -220,6 +266,131 @@ export const FeatureSection = () => {
             </Card>
           </div>
         </div>
+
+        {/* Certificate Display Modal */}
+        {showCertificate && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-background rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-2xl font-bold text-foreground">Generated Certificate & Statement of Result</h3>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowCertificate(false)}
+                    aria-label="Close certificate view"
+                  >
+                    Close
+                  </Button>
+                </div>
+                <CertificateTemplate {...sampleCertificateData} />
+                <div className="mt-6 flex justify-center gap-4">
+                  <Button variant="default">
+                    <Download className="w-4 h-4 mr-2" />
+                    Download PDF
+                  </Button>
+                  <Button variant="outline">
+                    Print Certificate
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Parent Portal Display */}
+        {showParentPortal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-2xl font-bold text-foreground">Parent Portal - Secure Access</h3>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowParentPortal(false)}
+                    aria-label="Close parent portal"
+                  >
+                    Close
+                  </Button>
+                </div>
+                
+                <div className="space-y-6">
+                  {/* Portal Header */}
+                  <div className="bg-gradient-primary p-6 rounded-lg text-white text-center">
+                    <h4 className="text-xl font-bold mb-2">Welcome to Excellence Academy Parent Portal</h4>
+                    <p className="text-white/90">Secure access to your child's academic results</p>
+                  </div>
+                  
+                  {/* Student Info */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Users className="w-5 h-5 text-primary" />
+                        Student Information
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Student Name</p>
+                          <p className="font-semibold">{sampleCertificateData.studentName}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Class</p>
+                          <p className="font-semibold">{sampleCertificateData.className}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Session</p>
+                          <p className="font-semibold">{sampleCertificateData.session}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Term</p>
+                          <p className="font-semibold">{sampleCertificateData.term}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  {/* Quick Stats */}
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <Card className="bg-gradient-success text-white">
+                      <CardContent className="p-4 text-center">
+                        <Award className="w-6 h-6 mx-auto mb-2" />
+                        <div className="text-2xl font-bold">{sampleCertificateData.position}</div>
+                        <div className="text-sm text-white/90">Class Position</div>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-gradient-primary text-white">
+                      <CardContent className="p-4 text-center">
+                        <FileSpreadsheet className="w-6 h-6 mx-auto mb-2" />
+                        <div className="text-2xl font-bold">{Math.round(sampleCertificateData.subjects.reduce((sum, s) => sum + s.score, 0) / sampleCertificateData.subjects.length)}%</div>
+                        <div className="text-sm text-white/90">Average Score</div>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-gradient-accent text-white">
+                      <CardContent className="p-4 text-center">
+                        <Users className="w-6 h-6 mx-auto mb-2" />
+                        <div className="text-2xl font-bold">{sampleCertificateData.totalStudents}</div>
+                        <div className="text-sm text-white/90">Total Students</div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex justify-center gap-4 pt-4">
+                    <Button onClick={() => {setShowParentPortal(false); setShowCertificate(true);}}>
+                      <Award className="w-4 h-4 mr-2" />
+                      View Full Certificate
+                    </Button>
+                    <Button variant="outline">
+                      <Download className="w-4 h-4 mr-2" />
+                      Download Results
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

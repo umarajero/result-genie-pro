@@ -27,6 +27,24 @@ export const FeatureSection = () => {
     });
   };
 
+  const handleSmartImport = () => {
+    const uploadSection = document.getElementById('upload');
+    if (uploadSection) {
+      uploadSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    toast({
+      title: "Smart File Import Ready!",
+      description: "Upload your Excel or CSV file to get started.",
+    });
+  };
+
+  const handleResultProcessing = () => {
+    toast({
+      title: "Result Processing Available!",
+      description: "Upload your student data first to enable automated processing.",
+    });
+  };
+
   const features = [
     {
       icon: Upload,
@@ -98,21 +116,45 @@ export const FeatureSection = () => {
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {features.map((feature, index) => (
-            <Card key={index} className="group hover:shadow-academic transition-all duration-300 border-0">
-              <CardHeader>
-                <div className={`w-12 h-12 rounded-lg ${feature.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <feature.icon className={`w-6 h-6 ${feature.color}`} />
-                </div>
-                <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base leading-relaxed">
-                  {feature.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
-          ))}
+          {features.map((feature, index) => {
+            const getClickHandler = () => {
+              if (feature.title === "Smart File Import") return handleSmartImport;
+              if (feature.title === "Result Processing") return handleResultProcessing;
+              return undefined;
+            };
+
+            return (
+              <Card 
+                key={index} 
+                className={`group hover:shadow-academic transition-all duration-300 border-0 ${
+                  getClickHandler() ? 'cursor-pointer hover:scale-105' : ''
+                }`}
+                onClick={getClickHandler()}
+              >
+                <CardHeader>
+                  <div className={`w-12 h-12 rounded-lg ${feature.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <feature.icon className={`w-6 h-6 ${feature.color}`} />
+                  </div>
+                  <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
+                  {getClickHandler() && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-4 w-full"
+                      aria-label={`Access ${feature.title}`}
+                    >
+                      Get Started
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Benefits Section */}

@@ -35,8 +35,7 @@ export const Header = () => {
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">Result Genie</h1>
-              <p className="text-xs text-primary font-medium">Pro</p>
+              <h1 className="text-xl font-bold text-foreground">AjeroCompute</h1>
             </div>
           </div>
 
@@ -68,7 +67,7 @@ export const Header = () => {
             <Button 
               variant="default" 
               onClick={handleGetStarted}
-              aria-label="Get started with Result Genie Pro"
+              aria-label="Get started with AjeroCompute"
             >
               Get Started
             </Button>
@@ -131,7 +130,7 @@ export const Header = () => {
                 <Button 
                   variant="default" 
                   onClick={handleGetStarted}
-                  aria-label="Get started with Result Genie Pro"
+                  aria-label="Get started with AjeroCompute"
                 >
                   Get Started
                 </Button>

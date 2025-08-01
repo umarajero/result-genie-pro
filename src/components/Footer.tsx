@@ -50,7 +50,7 @@ export const Footer = () => {
                 <GraduationCap className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-foreground">Result Genie Pro</h3>
+                <h3 className="text-lg font-bold text-foreground">AjeroCompute</h3>
               </div>
             </div>
             <p className="text-muted-foreground">
@@ -194,7 +194,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-8 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm">
-            © 2024 Result Genie Pro. All rights reserved.
+            © 2024 AjeroCompute. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
             <button 

@@ -119,7 +119,7 @@ export const FeatureSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h3 className="text-3xl font-bold text-foreground mb-6">
-              Why Teachers Love Result Genie Pro
+              Why Teachers Love AjeroCompute
             </h3>
             <div className="space-y-4">
               {benefits.map((benefit, index) => (
@@ -136,7 +136,7 @@ export const FeatureSection = () => {
                 variant="success" 
                 size="lg"
                 onClick={handleStartTrial}
-                aria-label="Start your free trial of Result Genie Pro"
+                aria-label="Start your free trial of AjeroCompute"
               >
                 Start Your Free Trial
                 <Zap className="w-5 h-5 ml-2" />

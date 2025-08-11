@@ -12,9 +12,11 @@ import {
   Check
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useStudentData } from "@/hooks/useStudentData";
 
 export const FeatureSection = () => {
   const { toast } = useToast();
+  const { students } = useStudentData();
 
   const handleStartTrial = () => {
     const uploadSection = document.getElementById('upload');
@@ -54,11 +56,24 @@ export const FeatureSection = () => {
   };
 
   const handleParentPortal = () => {
-    toast({
-      title: "Upload Student Data First", 
-      description: "Please upload your student data to enable the parent portal feature.",
-      variant: "destructive"
-    });
+    if (students.length === 0) {
+      toast({
+        title: "Upload Student Data First", 
+        description: "Please upload your student data to enable the parent portal feature.",
+        variant: "destructive"
+      });
+    } else {
+      // Navigate to parent portal
+      window.location.href = '#parent-portal';
+      const portalSection = document.getElementById('parent-portal');
+      if (portalSection) {
+        portalSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      toast({
+        title: "Parent Portal Opened",
+        description: "Parents can now access student results and notifications.",
+      });
+    }
   };
 
   const features = [

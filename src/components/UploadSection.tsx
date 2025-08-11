@@ -10,15 +10,21 @@ import {
   FileText,
   CheckCircle,
   AlertCircle,
-  Download
+  Download,
+  Award
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useStudentData } from "@/hooks/useStudentData";
+import { processExcelFile, processCsvFile } from "@/services/fileProcessor";
+import { CertificateGenerator } from "./CertificateGenerator";
 
 export const UploadSection = () => {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [showCertificates, setShowCertificates] = useState(false);
   const { toast } = useToast();
+  const { setStudents, setUploadedFileName, clearData } = useStudentData();
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -40,7 +46,7 @@ export const UploadSection = () => {
     }
   }, []);
 
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
     const validTypes = [
       'application/vnd.ms-excel',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -51,14 +57,30 @@ export const UploadSection = () => {
       setUploadedFile(file);
       setUploadStatus('uploading');
       
-      // Simulate upload process
-      setTimeout(() => {
+      try {
+        let students;
+        if (file.name.endsWith('.csv')) {
+          students = await processCsvFile(file);
+        } else {
+          students = await processExcelFile(file);
+        }
+        
+        setStudents(students);
+        setUploadedFileName(file.name);
         setUploadStatus('success');
+        
         toast({
-          title: "File uploaded successfully!",
-          description: `${file.name} has been processed and is ready for result generation.`,
+          title: "File processed successfully!",
+          description: `Found ${students.length} student records. Ready to generate certificates.`,
         });
-      }, 2000);
+      } catch (error) {
+        setUploadStatus('error');
+        toast({
+          title: "Processing failed",
+          description: error instanceof Error ? error.message : "Failed to process the file. Please check the format and try again.",
+          variant: "destructive",
+        });
+      }
     } else {
       setUploadStatus('error');
       toast({
@@ -78,6 +100,16 @@ export const UploadSection = () => {
   const resetUpload = () => {
     setUploadedFile(null);
     setUploadStatus('idle');
+    setShowCertificates(false);
+    clearData();
+  };
+
+  const handleGenerateCertificates = () => {
+    setShowCertificates(true);
+    toast({
+      title: "Certificates Ready!",
+      description: "You can now preview and download individual or all certificates.",
+    });
   };
 
   return (
@@ -175,17 +207,24 @@ export const UploadSection = () => {
                   </p>
                   
                   <div className="flex justify-center gap-4">
-                    <Button 
-                      variant="success"
-                      onClick={() => toast({
-                        title: "Generating Certificates",
-                        description: "Processing student data to create personalized certificates...",
-                      })}
-                      aria-label="Generate certificates for all students"
-                    >
-                      Generate Certificates
-                      <Award className="w-4 h-4 ml-2" />
-                    </Button>
+                    {!showCertificates ? (
+                      <Button 
+                        variant="success"
+                        onClick={handleGenerateCertificates}
+                        aria-label="Generate certificates for all students"
+                      >
+                        Generate Certificates
+                        <Award className="w-4 h-4 ml-2" />
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="outline"
+                        onClick={() => setShowCertificates(false)}
+                        aria-label="Return to upload summary"
+                      >
+                        Back to Summary
+                      </Button>
+                    )}
                     <Button 
                       variant="outline" 
                       onClick={resetUpload}
@@ -219,6 +258,13 @@ export const UploadSection = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* Certificate Generator */}
+          {showCertificates && (
+            <div className="mt-8">
+              <CertificateGenerator />
+            </div>
+          )}
 
           {/* Supported Formats */}
           <div className="mt-8 grid md:grid-cols-3 gap-4">
@@ -265,4 +311,3 @@ export const UploadSection = () => {
   );
 };
 
-import { Award } from "lucide-react";

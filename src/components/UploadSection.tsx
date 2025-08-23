@@ -58,20 +58,21 @@ export const UploadSection = () => {
       setUploadStatus('uploading');
       
       try {
-        let students;
+        let result;
         if (file.name.endsWith('.csv')) {
-          students = await processCsvFile(file);
+          result = await processCsvFile(file);
         } else {
-          students = await processExcelFile(file);
+          result = await processExcelFile(file);
         }
         
-        setStudents(students);
+        setStudents(result.students);
+        setSchoolInfo(result.schoolInfo);
         setUploadedFileName(file.name);
         setUploadStatus('success');
         
         toast({
           title: "File processed successfully!",
-          description: `Found ${students.length} student records. Ready to generate certificates.`,
+          description: `Found ${result.students.length} student records. Ready to generate certificates.`,
         });
       } catch (error) {
         setUploadStatus('error');

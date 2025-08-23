@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight, Download, Users, Award } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast';
 
 export const CertificateGenerator = () => {
-  const { students, uploadedFileName } = useStudentData();
+  const { students, uploadedFileName, schoolInfo } = useStudentData();
   const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
   const { toast } = useToast();
 
@@ -133,8 +133,8 @@ export const CertificateGenerator = () => {
         term="First Term"
         position="1st"
         totalStudents={students.length}
-        schoolName="Your School Name"
-        schoolAddress="School Address"
+        schoolName={schoolInfo?.name || "Excellence Academy"}
+        schoolAddress={schoolInfo?.address || "Academic Excellence Street"}
         schoolContact="contact@school.com"
         subjects={Object.entries(currentStudent.subjects).map(([name, score]) => ({
           name,

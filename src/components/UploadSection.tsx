@@ -24,7 +24,7 @@ export const UploadSection = () => {
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [showCertificates, setShowCertificates] = useState(false);
   const { toast } = useToast();
-  const { setStudents, setUploadedFileName, clearData } = useStudentData();
+  const { setStudents, setUploadedFileName, setSchoolInfo, clearData } = useStudentData();
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();

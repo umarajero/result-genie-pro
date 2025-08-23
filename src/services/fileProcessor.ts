@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
-import { StudentRecord } from '@/hooks/useStudentData';
+import { StudentRecord, SchoolInfo } from '@/hooks/useStudentData';
 
 const calculateGrade = (average: number): string => {
   if (average >= 80) return 'A';
@@ -10,7 +10,7 @@ const calculateGrade = (average: number): string => {
   return 'F';
 };
 
-export const processExcelFile = (file: File): Promise<StudentRecord[]> => {
+export const processExcelFile = (file: File): Promise<{ students: StudentRecord[], schoolInfo: SchoolInfo | null }> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
@@ -22,8 +22,8 @@ export const processExcelFile = (file: File): Promise<StudentRecord[]> => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
         
-        const students = processRawData(jsonData);
-        resolve(students);
+        const result = processRawData(jsonData);
+        resolve(result);
       } catch (error) {
         reject(error);
       }
@@ -34,13 +34,13 @@ export const processExcelFile = (file: File): Promise<StudentRecord[]> => {
   });
 };
 
-export const processCsvFile = (file: File): Promise<StudentRecord[]> => {
+export const processCsvFile = (file: File): Promise<{ students: StudentRecord[], schoolInfo: SchoolInfo | null }> => {
   return new Promise((resolve, reject) => {
     Papa.parse(file, {
       complete: (results) => {
         try {
-          const students = processRawData(results.data as any[][]);
-          resolve(students);
+          const result = processRawData(results.data as any[][]);
+          resolve(result);
         } catch (error) {
           reject(error);
         }
@@ -50,28 +50,96 @@ export const processCsvFile = (file: File): Promise<StudentRecord[]> => {
   });
 };
 
-const processRawData = (data: any[][]): StudentRecord[] => {
+const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo: SchoolInfo | null } => {
   if (data.length < 2) {
     throw new Error('File must contain at least a header row and one data row');
   }
   
-  const headers = data[0].map((header: any) => String(header).toLowerCase().trim());
-  const nameIndex = headers.findIndex(h => h.includes('name'));
-  const classIndex = headers.findIndex(h => h.includes('class'));
+  // Extract school information from the first few rows
+  let schoolInfo: SchoolInfo | null = null;
+  let headerRowIndex = 0;
   
-  if (nameIndex === -1) {
-    throw new Error('File must contain a "Name" column');
+  // Look for school information in the first few rows
+  for (let i = 0; i < Math.min(5, data.length); i++) {
+    const row = data[i];
+    if (!row || row.length === 0) continue;
+    
+    const rowText = row.join(' ').toLowerCase();
+    
+    // Look for school/institute name
+    if ((rowText.includes('school') || rowText.includes('institute') || rowText.includes('college') || rowText.includes('university')) && !schoolInfo) {
+      const schoolName = row.find(cell => cell && String(cell).trim().length > 3);
+      if (schoolName) {
+        schoolInfo = { name: String(schoolName).trim() };
+      }
+    }
+    
+    // Check if this row contains headers (name, subjects, etc.)
+    const hasName = row.some((cell: any) => String(cell).toLowerCase().includes('name'));
+    const hasSubjects = row.some((cell: any) => {
+      const cellStr = String(cell).toLowerCase();
+      return cellStr.includes('math') || cellStr.includes('english') || cellStr.includes('science') || 
+             cellStr.includes('subject') || cellStr.includes('marks') || cellStr.includes('score');
+    });
+    
+    if (hasName && (hasSubjects || row.length > 3)) {
+      headerRowIndex = i;
+      break;
+    }
   }
   
-  // Find subject columns (assuming they're numeric columns that aren't name/class)
+  // If no school info found, use a default
+  if (!schoolInfo) {
+    schoolInfo = { name: 'Academic Institution' };
+  }
+  
+  const headers = data[headerRowIndex].map((header: any) => String(header).toLowerCase().trim());
+  
+  // More flexible name detection
+  const nameIndex = headers.findIndex(h => 
+    h.includes('name') || h.includes('student') || h === 'names' || h === 'full name'
+  );
+  
+  // More flexible class detection
+  const classIndex = headers.findIndex(h => 
+    h.includes('class') || h.includes('grade') || h.includes('level') || h.includes('section')
+  );
+  
+  if (nameIndex === -1) {
+    throw new Error('File must contain a column with student names (Name, Student Name, etc.)');
+  }
+  
+  // Find subject columns - more flexible detection
   const subjectIndices: number[] = [];
   const subjectNames: string[] = [];
   
   headers.forEach((header, index) => {
-    if (index !== nameIndex && index !== classIndex && header && 
-        !header.includes('total') && !header.includes('average')) {
-      subjectIndices.push(index);
-      subjectNames.push(data[0][index]);
+    if (index !== nameIndex && index !== classIndex && header && header.length > 0) {
+      // Skip common non-subject columns
+      const skipColumns = ['total', 'average', 'percentage', 'rank', 'position', 'remarks', 'attendance'];
+      const isSkipColumn = skipColumns.some(skip => header.includes(skip));
+      
+      if (!isSkipColumn) {
+        // Check if the column contains mostly numeric data
+        let numericCount = 0;
+        let totalCount = 0;
+        
+        for (let i = headerRowIndex + 1; i < Math.min(headerRowIndex + 6, data.length); i++) {
+          if (data[i] && data[i][index] !== undefined && data[i][index] !== null) {
+            totalCount++;
+            const value = parseFloat(data[i][index]);
+            if (!isNaN(value)) {
+              numericCount++;
+            }
+          }
+        }
+        
+        // If more than 50% of the values are numeric, consider it a subject
+        if (totalCount > 0 && numericCount / totalCount >= 0.5) {
+          subjectIndices.push(index);
+          subjectNames.push(data[headerRowIndex][index]);
+        }
+      }
     }
   });
   
@@ -81,12 +149,12 @@ const processRawData = (data: any[][]): StudentRecord[] => {
   
   const students: StudentRecord[] = [];
   
-  for (let i = 1; i < data.length; i++) {
+  for (let i = headerRowIndex + 1; i < data.length; i++) {
     const row = data[i];
     if (!row || row.length === 0) continue;
     
     const name = String(row[nameIndex] || '').trim();
-    if (!name) continue;
+    if (!name || name.length < 2) continue;
     
     const subjects: { [subject: string]: number } = {};
     let totalMarks = 0;
@@ -94,7 +162,7 @@ const processRawData = (data: any[][]): StudentRecord[] => {
     
     subjectIndices.forEach((index, subjectIndex) => {
       const score = parseFloat(row[index]);
-      if (!isNaN(score)) {
+      if (!isNaN(score) && score >= 0) {
         subjects[subjectNames[subjectIndex]] = score;
         totalMarks += score;
         validSubjects++;
@@ -121,5 +189,5 @@ const processRawData = (data: any[][]): StudentRecord[] => {
     throw new Error('No valid student records found in the file');
   }
   
-  return students;
+  return { students, schoolInfo };
 };

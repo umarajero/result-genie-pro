@@ -12,11 +12,19 @@ export interface StudentRecord {
   grade: string;
 }
 
+export interface SchoolInfo {
+  name: string;
+  address?: string;
+  principalName?: string;
+}
+
 interface StudentDataContextType {
   students: StudentRecord[];
   setStudents: (students: StudentRecord[]) => void;
   uploadedFileName: string | null;
   setUploadedFileName: (fileName: string | null) => void;
+  schoolInfo: SchoolInfo | null;
+  setSchoolInfo: (schoolInfo: SchoolInfo | null) => void;
   clearData: () => void;
 }
 
@@ -25,10 +33,12 @@ const StudentDataContext = createContext<StudentDataContextType | undefined>(und
 export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
   const [students, setStudents] = useState<StudentRecord[]>([]);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
 
   const clearData = () => {
     setStudents([]);
     setUploadedFileName(null);
+    setSchoolInfo(null);
   };
 
   return (
@@ -37,6 +47,8 @@ export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
       setStudents,
       uploadedFileName,
       setUploadedFileName,
+      schoolInfo,
+      setSchoolInfo,
       clearData
     }}>
       {children}

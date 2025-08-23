@@ -7,6 +7,15 @@ import { useStudentData } from '@/hooks/useStudentData';
 import { ChevronLeft, ChevronRight, Download, Users, Award } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+const getOrdinalSuffix = (num: number): string => {
+  const j = num % 10;
+  const k = num % 100;
+  if (j === 1 && k !== 11) return 'st';
+  if (j === 2 && k !== 12) return 'nd';
+  if (j === 3 && k !== 13) return 'rd';
+  return 'th';
+};
+
 export const CertificateGenerator = () => {
   const { students, uploadedFileName, schoolInfo } = useStudentData();
   const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
@@ -131,13 +140,13 @@ export const CertificateGenerator = () => {
         className={currentStudent.class}
         serialNumber={currentStudent.serialNumber}
         regNumber={currentStudent.regNumber}
-        session={schoolInfo?.session || "2023/2024"}
+        session={schoolInfo?.session || new Date().getFullYear().toString()}
         term="First Term"
-        position="1st"
+        position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
         totalStudents={students.length}
-        schoolName={schoolInfo?.name || "Excellence Academy"}
-        schoolAddress={schoolInfo?.address || "Academic Excellence Street"}
-        schoolContact="contact@school.com"
+        schoolName={schoolInfo?.name || "School Name"}
+        schoolAddress={schoolInfo?.address || "School Address"}
+        schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
         subjects={Object.entries(currentStudent.subjects).map(([name, score]) => ({
           name,
           score,

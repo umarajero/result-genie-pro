@@ -56,21 +56,62 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   }
   
   // Extract school information from the first few rows
-  let schoolInfo: SchoolInfo | null = null;
+  let schoolInfo: SchoolInfo = { name: 'Academic Institution' };
   let headerRowIndex = 0;
   
-  // Look for school information in the first few rows
-  for (let i = 0; i < Math.min(5, data.length); i++) {
+  // Look for school information in the first 8 rows
+  for (let i = 0; i < Math.min(8, data.length); i++) {
     const row = data[i];
     if (!row || row.length === 0) continue;
     
     const rowText = row.join(' ').toLowerCase();
+    const fullRowText = row.join(' ').trim();
     
-    // Look for school/institute name
-    if ((rowText.includes('school') || rowText.includes('institute') || rowText.includes('college') || rowText.includes('university')) && !schoolInfo) {
-      const schoolName = row.find(cell => cell && String(cell).trim().length > 3);
+    // Look for school/institute name - prioritize longer, more descriptive names
+    if ((rowText.includes('school') || rowText.includes('institute') || rowText.includes('college') || rowText.includes('university') || rowText.includes('academy')) && !schoolInfo.name.includes('Academic Institution')) {
+      const schoolName = row.find(cell => {
+        const cellStr = String(cell).trim();
+        const cellLower = cellStr.toLowerCase();
+        return cellStr.length > 5 && (
+          cellLower.includes('school') || cellLower.includes('institute') || 
+          cellLower.includes('college') || cellLower.includes('university') || 
+          cellLower.includes('academy')
+        );
+      });
       if (schoolName) {
-        schoolInfo = { name: String(schoolName).trim() };
+        schoolInfo.name = String(schoolName).trim();
+      }
+    }
+    
+    // Look for address (usually contains location keywords)
+    if (!schoolInfo.address && (rowText.includes('address') || rowText.includes('street') || rowText.includes('road') || rowText.includes('avenue') || rowText.includes('city') || rowText.includes('state'))) {
+      const addressCell = row.find(cell => {
+        const cellStr = String(cell).trim();
+        const cellLower = cellStr.toLowerCase();
+        return cellStr.length > 10 && (
+          cellLower.includes('street') || cellLower.includes('road') || 
+          cellLower.includes('avenue') || cellLower.includes('city') || 
+          cellLower.includes('address') || cellLower.includes('location')
+        );
+      });
+      if (addressCell) {
+        schoolInfo.address = String(addressCell).trim();
+      }
+    }
+    
+    // Look for academic session (formats like 2023/2024, 2023-2024, etc.)
+    if (!schoolInfo.session) {
+      const sessionPattern = /(\d{4})[\/\-](\d{4})/;
+      const sessionMatch = fullRowText.match(sessionPattern);
+      if (sessionMatch) {
+        schoolInfo.session = sessionMatch[0];
+      } else {
+        // Look for single year or other session formats
+        const yearPattern = /\b(20\d{2})\b/;
+        const yearMatch = fullRowText.match(yearPattern);
+        if (yearMatch && (rowText.includes('session') || rowText.includes('academic') || rowText.includes('year'))) {
+          schoolInfo.session = yearMatch[0];
+        }
       }
     }
     
@@ -86,11 +127,6 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
       headerRowIndex = i;
       break;
     }
-  }
-  
-  // If no school info found, use a default
-  if (!schoolInfo) {
-    schoolInfo = { name: 'Academic Institution' };
   }
   
   const headers = data[headerRowIndex].map((header: any) => String(header).toLowerCase().trim());

@@ -4,6 +4,8 @@ export interface StudentRecord {
   id: string;
   name: string;
   class: string;
+  serialNumber?: string;
+  regNumber?: string;
   subjects: {
     [subject: string]: number;
   };
@@ -16,6 +18,7 @@ export interface SchoolInfo {
   name: string;
   address?: string;
   principalName?: string;
+  session?: string;
 }
 
 interface StudentDataContextType {

@@ -131,7 +131,7 @@ export const CertificateGenerator = () => {
         className={currentStudent.class}
         serialNumber={currentStudent.serialNumber}
         regNumber={currentStudent.regNumber}
-        session="2023/2024"
+        session={schoolInfo?.session || "2023/2024"}
         term="First Term"
         position="1st"
         totalStudents={students.length}

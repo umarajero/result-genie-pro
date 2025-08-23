@@ -105,6 +105,16 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
     h.includes('class') || h.includes('grade') || h.includes('level') || h.includes('section')
   );
   
+  // Find S/N (Serial Number) column
+  const serialNumberIndex = headers.findIndex(h => 
+    h.includes('s/n') || h.includes('sn') || h.includes('serial') || h === 's.n' || h === 'no'
+  );
+  
+  // Find REG No (Registration Number) column
+  const regNumberIndex = headers.findIndex(h => 
+    h.includes('reg') || h.includes('registration') || h.includes('regno') || h.includes('reg no') || h.includes('reg.no')
+  );
+  
   if (nameIndex === -1) {
     throw new Error('File must contain a column with student names (Name, Student Name, etc.)');
   }
@@ -114,9 +124,9 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   const subjectNames: string[] = [];
   
   headers.forEach((header, index) => {
-    if (index !== nameIndex && index !== classIndex && header && header.length > 0) {
+    if (index !== nameIndex && index !== classIndex && index !== serialNumberIndex && index !== regNumberIndex && header && header.length > 0) {
       // Skip common non-subject columns
-      const skipColumns = ['total', 'average', 'percentage', 'rank', 'position', 'remarks', 'attendance'];
+      const skipColumns = ['total', 'average', 'percentage', 'rank', 'position', 'remarks', 'attendance', 's/n', 'sn', 'serial', 'reg', 'registration', 'regno'];
       const isSkipColumn = skipColumns.some(skip => header.includes(skip));
       
       if (!isSkipColumn) {
@@ -178,6 +188,8 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
       id: `student-${i}`,
       name,
       class: classIndex !== -1 ? String(row[classIndex] || '') : '',
+      serialNumber: serialNumberIndex !== -1 ? String(row[serialNumberIndex] || '') : undefined,
+      regNumber: regNumberIndex !== -1 ? String(row[regNumberIndex] || '') : undefined,
       subjects,
       totalMarks,
       averageScore: Math.round(averageScore * 100) / 100,

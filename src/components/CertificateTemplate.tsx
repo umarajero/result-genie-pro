@@ -3,6 +3,8 @@ import { Award, GraduationCap, Calendar, Users } from "lucide-react";
 interface CertificateTemplateProps {
   studentName: string;
   className: string;
+  serialNumber?: string;
+  regNumber?: string;
   session: string;
   term: string;
   position: string;
@@ -21,6 +23,8 @@ interface CertificateTemplateProps {
 export const CertificateTemplate = ({
   studentName,
   className,
+  serialNumber,
+  regNumber,
   session,
   term,
   position,
@@ -76,6 +80,18 @@ export const CertificateTemplate = ({
           </div>
         </div>
         <div className="space-y-3">
+          {serialNumber && (
+            <div className="flex items-center gap-3">
+              <span className="font-semibold text-foreground min-w-[120px]">S/N:</span>
+              <span className="text-foreground">{serialNumber}</span>
+            </div>
+          )}
+          {regNumber && (
+            <div className="flex items-center gap-3">
+              <span className="font-semibold text-foreground min-w-[120px]">REG No:</span>
+              <span className="text-foreground">{regNumber}</span>
+            </div>
+          )}
           <div className="flex items-center gap-3">
             <span className="font-semibold text-foreground min-w-[120px]">Position:</span>
             <span className="text-accent font-bold">{position} out of {totalStudents}</span>

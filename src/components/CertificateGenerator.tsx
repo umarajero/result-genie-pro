@@ -129,6 +129,8 @@ export const CertificateGenerator = () => {
       <CertificateTemplate
         studentName={currentStudent.name}
         className={currentStudent.class}
+        serialNumber={currentStudent.serialNumber}
+        regNumber={currentStudent.regNumber}
         session="2023/2024"
         term="First Term"
         position="1st"

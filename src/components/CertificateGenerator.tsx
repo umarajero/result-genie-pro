@@ -145,8 +145,9 @@ export const CertificateGenerator = () => {
         position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
         totalStudents={students.length}
         schoolName={schoolInfo?.name || "School Name"}
-        schoolAddress={schoolInfo?.address || "School Address"}
+        schoolAddress={schoolInfo?.address || ""}
         schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
+        schoolLogo={schoolInfo?.logo}
         subjects={Object.entries(currentStudent.subjects).map(([name, score]) => ({
           name,
           score,

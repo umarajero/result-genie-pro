@@ -21,7 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 export const ParentPortal = () => {
-  const { students } = useStudentData();
+  const { students, schoolInfo } = useStudentData();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [showCertificate, setShowCertificate] = useState(false);
@@ -301,13 +301,16 @@ export const ParentPortal = () => {
               <CertificateTemplate
                 studentName={selectedStudent.name}
                 className={selectedStudent.class}
-                session="2023/2024"
+                serialNumber={selectedStudent.serialNumber}
+                regNumber={selectedStudent.regNumber}
+                session={schoolInfo?.session || new Date().getFullYear().toString()}
                 term="First Term"
                 position="1st"
                 totalStudents={students.length}
-                schoolName="Your School Name"
-                schoolAddress="School Address"
-                schoolContact="contact@school.com"
+                schoolName={schoolInfo?.name || "School Name"}
+                schoolAddress={schoolInfo?.address || ""}
+                schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
+                schoolLogo={schoolInfo?.logo}
                 subjects={Object.entries(selectedStudent.subjects).map(([name, score]) => ({
                   name,
                   score: Number(score),

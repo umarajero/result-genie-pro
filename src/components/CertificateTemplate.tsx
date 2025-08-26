@@ -12,6 +12,7 @@ interface CertificateTemplateProps {
   schoolName: string;
   schoolAddress: string;
   schoolContact: string;
+  schoolLogo?: string;
   subjects: Array<{
     name: string;
     score: number;
@@ -32,6 +33,7 @@ export const CertificateTemplate = ({
   schoolName,
   schoolAddress,
   schoolContact,
+  schoolLogo,
   subjects,
   dateIssued
 }: CertificateTemplateProps) => {
@@ -51,14 +53,32 @@ export const CertificateTemplate = ({
     <div className="max-w-4xl mx-auto bg-white p-8 shadow-certificate rounded-lg border-2 border-primary">
       {/* Header */}
       <div className="text-center mb-8 border-b-2 border-secondary pb-6">
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <div className="p-3 bg-gradient-primary rounded-full">
-            <GraduationCap className="w-8 h-8 text-white" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-primary">{schoolName}</h1>
-            <p className="text-muted-foreground">{schoolAddress}</p>
-            <p className="text-muted-foreground">{schoolContact}</p>
+        <div className="flex items-center justify-center gap-6 mb-4">
+          {schoolLogo ? (
+            <div className="w-20 h-20 flex items-center justify-center bg-muted rounded-full overflow-hidden border-2 border-primary">
+              <img 
+                src={schoolLogo} 
+                alt={`${schoolName} Logo`}
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <div className="hidden p-3 bg-gradient-primary rounded-full">
+                <GraduationCap className="w-8 h-8 text-white" />
+              </div>
+            </div>
+          ) : (
+            <div className="w-20 h-20 p-4 bg-gradient-primary rounded-full flex items-center justify-center">
+              <GraduationCap className="w-12 h-12 text-white" />
+            </div>
+          )}
+          <div className="text-left">
+            <h1 className="text-4xl font-bold text-primary mb-2">{schoolName}</h1>
+            {schoolAddress && <p className="text-muted-foreground text-lg">{schoolAddress}</p>}
+            {schoolContact && <p className="text-muted-foreground">{schoolContact}</p>}
           </div>
         </div>
         <div className="bg-gradient-subtle p-4 rounded-lg">

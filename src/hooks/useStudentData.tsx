@@ -19,6 +19,7 @@ export interface SchoolInfo {
   address?: string;
   principalName?: string;
   session?: string;
+  logo?: string;
 }
 
 interface StudentDataContextType {

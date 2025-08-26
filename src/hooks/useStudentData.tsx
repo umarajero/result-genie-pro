@@ -37,7 +37,13 @@ const StudentDataContext = createContext<StudentDataContextType | undefined>(und
 export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
   const [students, setStudents] = useState<StudentRecord[]>([]);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
+  const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>({
+    name: "ElevateHer Innovation Space Limited",
+    address: "",
+    session: new Date().getFullYear().toString(),
+    principalName: "",
+    logo: "/lovable-uploads/adf00b49-dc2e-4fe3-ab22-f2866642dc2a.png"
+  });
 
   const clearData = () => {
     setStudents([]);

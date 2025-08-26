@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,8 @@ import { CertificateTemplate } from './CertificateTemplate';
 import { useStudentData } from '@/hooks/useStudentData';
 import { ChevronLeft, ChevronRight, Download, Users, Award } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const getOrdinalSuffix = (num: number): string => {
   const j = num % 10;
@@ -19,6 +21,8 @@ const getOrdinalSuffix = (num: number): string => {
 export const CertificateGenerator = () => {
   const { students, uploadedFileName, schoolInfo } = useStudentData();
   const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const certificateRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   if (students.length === 0) {
@@ -51,18 +55,101 @@ export const CertificateGenerator = () => {
     );
   };
 
-  const handleDownloadCertificate = () => {
-    toast({
-      title: "Downloading Certificate",
-      description: `Certificate for ${currentStudent.name} will be downloaded as PDF.`,
-    });
+  const handleDownloadCertificate = async () => {
+    if (!certificateRef.current || isDownloading) return;
+    
+    setIsDownloading(true);
+    try {
+      const canvas = await html2canvas(certificateRef.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff'
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      
+      let position = 0;
+      
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+      
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save(`${currentStudent.name}_Certificate.pdf`);
+      
+      toast({
+        title: "Download Successful",
+        description: `Certificate for ${currentStudent.name} has been downloaded.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "There was an error generating the PDF. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
-  const handleDownloadAll = () => {
-    toast({
-      title: "Generating All Certificates",
-      description: `Creating ${students.length} certificates. This may take a moment...`,
-    });
+  const handleDownloadAll = async () => {
+    if (isDownloading) return;
+    
+    setIsDownloading(true);
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      for (let i = 0; i < students.length; i++) {
+        if (i > 0) {
+          setCurrentStudentIndex(i);
+          // Wait a bit for the component to re-render
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        
+        if (certificateRef.current) {
+          const canvas = await html2canvas(certificateRef.current, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff'
+          });
+          
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = 210;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          if (i > 0) pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        }
+      }
+      
+      pdf.save(`All_Certificates_${schoolInfo?.name || 'School'}.pdf`);
+      
+      toast({
+        title: "Download Successful",
+        description: `All ${students.length} certificates have been downloaded.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "There was an error generating the PDFs. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -118,16 +205,18 @@ export const CertificateGenerator = () => {
               <Button
                 variant="outline"
                 onClick={handleDownloadCertificate}
+                disabled={isDownloading}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download This
+                {isDownloading ? 'Generating...' : 'Download This'}
               </Button>
               <Button
                 variant="default"
                 onClick={handleDownloadAll}
+                disabled={isDownloading}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download All ({students.length})
+                {isDownloading ? 'Generating...' : `Download All (${students.length})`}
               </Button>
             </div>
           </div>
@@ -135,7 +224,8 @@ export const CertificateGenerator = () => {
       </Card>
 
       {/* Certificate Preview */}
-      <CertificateTemplate
+      <div ref={certificateRef}>
+        <CertificateTemplate
         studentName={currentStudent.name}
         className={currentStudent.class}
         serialNumber={currentStudent.serialNumber}
@@ -154,7 +244,8 @@ export const CertificateGenerator = () => {
           grade: score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : score >= 50 ? 'D' : 'F'
         }))}
         dateIssued={new Date().toLocaleDateString()}
-      />
+        />
+      </div>
     </div>
   );
 };

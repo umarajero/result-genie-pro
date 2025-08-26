@@ -42,7 +42,7 @@ export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
     address: "",
     session: new Date().getFullYear().toString(),
     principalName: "",
-    logo: "/lovable-uploads/adf00b49-dc2e-4fe3-ab22-f2866642dc2a.png"
+    logo: "/lovable-uploads/7cdd4f04-6759-4df0-98ca-039c85f03aa2.png"
   });
 
   const clearData = () => {

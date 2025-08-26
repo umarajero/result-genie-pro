@@ -25,22 +25,7 @@ export const ParentPortal = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [showCertificate, setShowCertificate] = useState(false);
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: 'sms',
-      message: 'Results published for John Doe - Math: A, English: B+',
-      timestamp: '2024-01-15 10:30 AM',
-      read: false
-    },
-    {
-      id: 2,
-      type: 'sms', 
-      message: 'Certificate ready for download - John Doe',
-      timestamp: '2024-01-15 11:00 AM',
-      read: true
-    }
-  ]);
+  const [notifications, setNotifications] = useState([]);
   const { toast } = useToast();
 
   const filteredStudents = students.filter(student =>

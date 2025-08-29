@@ -234,7 +234,7 @@ export const CertificateGenerator = () => {
         term="First Term"
         position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
         totalStudents={students.length}
-        schoolName={schoolInfo?.name || "School Name"}
+        schoolName={schoolInfo?.name || ""}
         schoolAddress={schoolInfo?.address || ""}
         schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
         schoolLogo={schoolInfo?.logo}

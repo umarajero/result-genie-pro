@@ -2,9 +2,11 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CertificateTemplate } from './CertificateTemplate';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { StatementOfResult } from './StatementOfResult';
+import { Certificate } from './Certificate';
 import { useStudentData } from '@/hooks/useStudentData';
-import { ChevronLeft, ChevronRight, Download, Users, Award } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Users, Award, FileText, Medal } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -22,6 +24,7 @@ export const CertificateGenerator = () => {
   const { students, uploadedFileName, schoolInfo } = useStudentData();
   const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [activeTab, setActiveTab] = useState("statement");
   const certificateRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -41,7 +44,23 @@ export const CertificateGenerator = () => {
     );
   }
 
+  // Calculate values for certificate
   const currentStudent = students[currentStudentIndex];
+  const subjects = Object.entries(currentStudent.subjects).map(([name, score]) => ({
+    name,
+    score,
+    grade: score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : score >= 50 ? 'D' : 'F'
+  }));
+  const totalMarks = subjects.reduce((sum, subject) => sum + subject.score, 0);
+  const averageScore = Math.round(totalMarks / subjects.length);
+  const getGradeFromAverage = (avg: number) => {
+    if (avg >= 80) return "A";
+    if (avg >= 70) return "B";
+    if (avg >= 60) return "C";
+    if (avg >= 50) return "D";
+    if (avg >= 40) return "E";
+    return "F";
+  };
 
   const handlePrevious = () => {
     setCurrentStudentIndex(prev => 
@@ -87,11 +106,12 @@ export const CertificateGenerator = () => {
         heightLeft -= pageHeight;
       }
       
-      pdf.save(`${currentStudent.name}_Certificate.pdf`);
+      const documentType = activeTab === "statement" ? "Statement" : "Certificate";
+      pdf.save(`${currentStudent.name}_${documentType}.pdf`);
       
       toast({
         title: "Download Successful",
-        description: `Certificate for ${currentStudent.name} has been downloaded.`,
+        description: `${documentType} for ${currentStudent.name} has been downloaded.`,
       });
     } catch (error) {
       toast({
@@ -110,6 +130,7 @@ export const CertificateGenerator = () => {
     setIsDownloading(true);
     try {
       const pdf = new jsPDF('p', 'mm', 'a4');
+      const documentType = activeTab === "statement" ? "Statements" : "Certificates";
       
       for (let i = 0; i < students.length; i++) {
         if (i > 0) {
@@ -135,11 +156,11 @@ export const CertificateGenerator = () => {
         }
       }
       
-      pdf.save(`All_Certificates_${schoolInfo?.name || 'School'}.pdf`);
+      pdf.save(`All_${documentType}_${schoolInfo?.name || 'School'}.pdf`);
       
       toast({
         title: "Download Successful",
-        description: `All ${students.length} certificates have been downloaded.`,
+        description: `All ${students.length} ${documentType.toLowerCase()} have been downloaded.`,
       });
     } catch (error) {
       toast({
@@ -161,7 +182,7 @@ export const CertificateGenerator = () => {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Award className="w-5 h-5 text-primary" />
-                Certificate Generator
+                Document Generator
               </CardTitle>
               <p className="text-muted-foreground mt-1">
                 Source: {uploadedFileName}
@@ -174,6 +195,22 @@ export const CertificateGenerator = () => {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Document Type Tabs */}
+          <div className="mb-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="statement" className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Statement of Result
+                </TabsTrigger>
+                <TabsTrigger value="certificate" className="flex items-center gap-2">
+                  <Medal className="w-4 h-4" />
+                  Certificate
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
@@ -223,28 +260,42 @@ export const CertificateGenerator = () => {
         </CardContent>
       </Card>
 
-      {/* Certificate Preview */}
+      {/* Document Preview */}
       <div ref={certificateRef}>
-        <CertificateTemplate
-        studentName={currentStudent.name}
-        className={currentStudent.class}
-        serialNumber={currentStudent.serialNumber}
-        regNumber={currentStudent.regNumber}
-        session={schoolInfo?.session || new Date().getFullYear().toString()}
-        term="First Term"
-        position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
-        totalStudents={students.length}
-        schoolName={schoolInfo?.name || ""}
-        schoolAddress={schoolInfo?.address || ""}
-        schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
-        schoolLogo={schoolInfo?.logo}
-        subjects={Object.entries(currentStudent.subjects).map(([name, score]) => ({
-          name,
-          score,
-          grade: score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : score >= 50 ? 'D' : 'F'
-        }))}
-        dateIssued={new Date().toLocaleDateString()}
-        />
+        {activeTab === "statement" ? (
+          <StatementOfResult
+            studentName={currentStudent.name}
+            className={currentStudent.class}
+            serialNumber={currentStudent.serialNumber}
+            regNumber={currentStudent.regNumber}
+            session={schoolInfo?.session || new Date().getFullYear().toString()}
+            term="First Term"
+            position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
+            totalStudents={students.length}
+            schoolName={schoolInfo?.name || ""}
+            schoolAddress={schoolInfo?.address || ""}
+            schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
+            schoolLogo={schoolInfo?.logo}
+            subjects={subjects}
+            dateIssued={new Date().toLocaleDateString()}
+          />
+        ) : (
+          <Certificate
+            studentName={currentStudent.name}
+            className={currentStudent.class}
+            session={schoolInfo?.session || new Date().getFullYear().toString()}
+            term="First Term"
+            position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
+            totalStudents={students.length}
+            schoolName={schoolInfo?.name || ""}
+            schoolAddress={schoolInfo?.address || ""}
+            schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
+            schoolLogo={schoolInfo?.logo}
+            averageScore={averageScore}
+            overallGrade={getGradeFromAverage(averageScore)}
+            dateIssued={new Date().toLocaleDateString()}
+          />
+        )}
       </div>
     </div>
   );

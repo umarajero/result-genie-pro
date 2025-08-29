@@ -1,6 +1,6 @@
 import { Award, GraduationCap, Calendar, Users } from "lucide-react";
 
-interface CertificateTemplateProps {
+interface StatementOfResultProps {
   studentName: string;
   className: string;
   serialNumber?: string;
@@ -21,7 +21,7 @@ interface CertificateTemplateProps {
   dateIssued: string;
 }
 
-export const CertificateTemplate = ({
+export const StatementOfResult = ({
   studentName,
   className,
   serialNumber,
@@ -36,7 +36,7 @@ export const CertificateTemplate = ({
   schoolLogo,
   subjects,
   dateIssued
-}: CertificateTemplateProps) => {
+}: StatementOfResultProps) => {
   const totalMarks = subjects.reduce((sum, subject) => sum + subject.score, 0);
   const averageScore = Math.round(totalMarks / subjects.length);
   
@@ -175,25 +175,6 @@ export const CertificateTemplate = ({
         <div className="bg-gradient-accent p-4 rounded-lg text-center">
           <div className="text-2xl font-bold text-white">{getGradeFromAverage(averageScore)}</div>
           <div className="text-white/90 font-medium">Overall Grade</div>
-        </div>
-      </div>
-
-      {/* Certificate Section */}
-      <div className="bg-gradient-hero p-6 rounded-lg text-center text-white mb-8">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <Award className="w-8 h-8" />
-          <h3 className="text-2xl font-bold">Certificate of Achievement</h3>
-          <Award className="w-8 h-8" />
-        </div>
-        <p className="text-lg mb-2">This is to certify that</p>
-        <p className="text-3xl font-bold mb-2">{studentName}</p>
-        <p className="text-lg mb-4">
-          has successfully completed the {term} term of {session} academic session 
-          in {className} with distinction.
-        </p>
-        <div className="flex items-center justify-center gap-2 text-white/90">
-          <Users className="w-5 h-5" />
-          <span>Position: {position} out of {totalStudents} students</span>
         </div>
       </div>
 

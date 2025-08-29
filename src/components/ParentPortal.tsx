@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useStudentData } from '@/hooks/useStudentData';
-import { CertificateTemplate } from './CertificateTemplate';
+import { StatementOfResult } from './StatementOfResult';
+import { Certificate } from './Certificate';
 import { 
   Search, 
   MessageSquare, 
@@ -283,24 +284,19 @@ export const ParentPortal = () => {
                 </div>
               </div>
               
-              <CertificateTemplate
+              <Certificate
                 studentName={selectedStudent.name}
                 className={selectedStudent.class}
-                serialNumber={selectedStudent.serialNumber}
-                regNumber={selectedStudent.regNumber}
                 session={schoolInfo?.session || new Date().getFullYear().toString()}
                 term="First Term"
                 position="1st"
                 totalStudents={students.length}
-                schoolName={schoolInfo?.name || "School Name"}
+                schoolName={schoolInfo?.name || ""}
                 schoolAddress={schoolInfo?.address || ""}
                 schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
                 schoolLogo={schoolInfo?.logo}
-                subjects={Object.entries(selectedStudent.subjects).map(([name, score]) => ({
-                  name,
-                  score: Number(score),
-                  grade: Number(score) >= 80 ? 'A' : Number(score) >= 70 ? 'B' : Number(score) >= 60 ? 'C' : Number(score) >= 50 ? 'D' : 'F'
-                }))}
+                averageScore={selectedStudent.averageScore || 0}
+                overallGrade={selectedStudent.grade || "F"}
                 dateIssued={new Date().toLocaleDateString()}
               />
             </div>

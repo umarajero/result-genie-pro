@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, School, Check } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Upload, School, Check, Link, Image } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useStudentData } from "@/hooks/useStudentData";
 
@@ -12,6 +13,7 @@ export const SchoolInfoForm = () => {
   const { schoolInfo, setSchoolInfo } = useStudentData();
   const { toast } = useToast();
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string>("");
   const [logoPreview, setLogoPreview] = useState<string | null>(
     schoolInfo?.logo || null
   );
@@ -25,15 +27,7 @@ export const SchoolInfoForm = () => {
         reader.onload = (e) => {
           const result = e.target?.result as string;
           setLogoPreview(result);
-          // Update school info with the logo
-          setSchoolInfo({
-            ...schoolInfo,
-            name: schoolInfo?.name || "ElevateHer Innovation Space Limited",
-            address: schoolInfo?.address || "",
-            session: schoolInfo?.session || new Date().getFullYear().toString(),
-            principalName: schoolInfo?.principalName || "",
-            logo: result
-          });
+          updateSchoolInfoLogo(result);
         };
         reader.readAsDataURL(file);
         
@@ -49,6 +43,39 @@ export const SchoolInfoForm = () => {
         });
       }
     }
+  };
+
+  const handleLogoUrl = () => {
+    if (logoUrl.trim()) {
+      // Basic URL validation
+      try {
+        new URL(logoUrl);
+        setLogoPreview(logoUrl);
+        updateSchoolInfoLogo(logoUrl);
+        
+        toast({
+          title: "Logo URL updated",
+          description: "School logo has been updated successfully.",
+        });
+      } catch {
+        toast({
+          title: "Invalid URL",
+          description: "Please enter a valid image URL.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const updateSchoolInfoLogo = (logoSrc: string) => {
+    setSchoolInfo({
+      ...schoolInfo,
+      name: schoolInfo?.name || "ElevateHer Innovation Space Limited",
+      address: schoolInfo?.address || "",
+      session: schoolInfo?.session || new Date().getFullYear().toString(),
+      principalName: schoolInfo?.principalName || "",
+      logo: logoSrc
+    });
   };
 
   const handleSchoolInfoChange = (field: string, value: string) => {
@@ -133,42 +160,85 @@ export const SchoolInfoForm = () => {
 
               {/* Logo Upload */}
               <div className="space-y-2">
-                <Label htmlFor="school-logo">School Logo</Label>
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <Label htmlFor="logo-upload" className="cursor-pointer">
-                      <div className="border-2 border-dashed border-border hover:border-primary/50 rounded-lg p-4 text-center transition-colors">
-                        <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">
-                          Click to upload logo
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Supports JPG, PNG, SVG
-                        </p>
-                      </div>
-                    </Label>
-                    <Input
-                      id="logo-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="hidden"
-                    />
-                  </div>
+                <Label>School Logo</Label>
+                <Tabs defaultValue="upload" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="upload" className="flex items-center gap-2">
+                      <Upload className="w-4 h-4" />
+                      Upload File
+                    </TabsTrigger>
+                    <TabsTrigger value="url" className="flex items-center gap-2">
+                      <Link className="w-4 h-4" />
+                      From URL
+                    </TabsTrigger>
+                  </TabsList>
                   
-                  {/* Logo Preview */}
-                  {logoPreview && (
-                    <div className="flex-shrink-0">
-                      <div className="w-20 h-20 border rounded-lg overflow-hidden bg-muted">
-                        <img
-                          src={logoPreview}
-                          alt="School logo preview"
-                          className="w-full h-full object-contain"
+                  <TabsContent value="upload" className="mt-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <Label htmlFor="logo-upload" className="cursor-pointer">
+                          <div className="border-2 border-dashed border-border hover:border-primary/50 rounded-lg p-4 text-center transition-colors">
+                            <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
+                            <p className="text-sm text-muted-foreground">
+                              Click to upload logo
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Supports JPG, PNG, SVG
+                            </p>
+                          </div>
+                        </Label>
+                        <Input
+                          id="logo-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleLogoUpload}
+                          className="hidden"
                         />
                       </div>
                     </div>
-                  )}
-                </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="url" className="mt-4">
+                    <div className="flex gap-2">
+                      <Input
+                        type="url"
+                        placeholder="Enter image URL (https://...)"
+                        value={logoUrl}
+                        onChange={(e) => setLogoUrl(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button 
+                        onClick={handleLogoUrl}
+                        size="default"
+                        className="shrink-0"
+                      >
+                        <Image className="w-4 h-4 mr-2" />
+                        Load
+                      </Button>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+                
+                {/* Logo Preview */}
+                {logoPreview && (
+                  <div className="mt-4">
+                    <div className="w-20 h-20 border rounded-lg overflow-hidden bg-muted mx-auto">
+                      <img
+                        src={logoPreview}
+                        alt="School logo preview"
+                        className="w-full h-full object-contain"
+                        onError={() => {
+                          toast({
+                            title: "Failed to load image",
+                            description: "Please check the image URL or try a different image.",
+                            variant: "destructive",
+                          });
+                          setLogoPreview(null);
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Status indicator */}

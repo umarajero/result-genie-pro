@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useStudentData } from "@/hooks/useStudentData";
 import { processExcelFile, processCsvFile } from "@/services/fileProcessor";
 import { CertificateGenerator } from "./CertificateGenerator";
+import { SchoolInfoForm } from "./SchoolInfoForm";
 
 export const UploadSection = () => {
   const [dragActive, setDragActive] = useState(false);
@@ -125,6 +126,9 @@ export const UploadSection = () => {
             Our system will automatically process and generate professional certificates.
           </p>
         </div>
+
+        {/* School Information Form */}
+        <SchoolInfoForm />
 
         <div className="max-w-4xl mx-auto">
           <Card className="border-2 border-dashed border-primary/20 bg-primary/5 hover:border-primary/40 transition-colors">

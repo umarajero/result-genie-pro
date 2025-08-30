@@ -2,16 +2,15 @@ import { Button } from "@/components/ui/button";
 import { GraduationCap, Menu } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSignIn = () => {
-    toast({
-      title: "Sign In",
-      description: "Redirecting to sign in page...",
-    });
+    navigate('/auth');
   };
 
   const handleGetStarted = () => {

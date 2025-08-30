@@ -57,7 +57,7 @@ export const Certificate = ({
               <GraduationCap className="w-12 h-12 text-white" />
             </div>
           )}
-          <div className="text-left">
+          <div className="text-center">
             <h1 className="text-4xl font-bold text-primary mb-2">{schoolName}</h1>
             {schoolAddress && <p className="text-muted-foreground text-lg">{schoolAddress}</p>}
             {schoolContact && <p className="text-muted-foreground">{schoolContact}</p>}
@@ -131,7 +131,7 @@ export const Certificate = ({
         </div>
         <div className="text-center">
           <div className="h-16 border-b border-muted-foreground mb-2"></div>
-          <p className="font-semibold text-foreground">Head Teacher/Principal</p>
+          <p className="font-semibold text-foreground">Instructor Name</p>
           <p className="text-muted-foreground text-sm">Signature & Date</p>
         </div>
       </div>

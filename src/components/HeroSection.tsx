@@ -2,9 +2,12 @@ import { Button } from "@/components/ui/button";
 import { GraduationCap, Upload, Award, Users } from "lucide-react";
 import heroImage from "@/assets/hero-education.jpg";
 import { useToast } from "@/hooks/use-toast";
+import { DemoModal } from "./DemoModal";
+import { useState } from "react";
 
 export const HeroSection = () => {
   const { toast } = useToast();
+  const [isDemoOpen, setIsDemoOpen] = useState(false);
 
   const handleGetStarted = () => {
     const uploadSection = document.getElementById('upload');
@@ -18,12 +21,11 @@ export const HeroSection = () => {
   };
 
   const handleWatchDemo = () => {
+    setIsDemoOpen(true);
     toast({
-      title: "Demo Video",
-      description: "Opening demo video in new window...",
+      title: "Demo Starting",
+      description: "Take an interactive tour of AjeroCompute features!",
     });
-    // In a real app, this would open a demo video
-    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
   };
 
   return (
@@ -115,6 +117,9 @@ export const HeroSection = () => {
       {/* Decorative Elements */}
       <div className="absolute top-1/4 right-10 w-20 h-20 bg-secondary/20 rounded-full animate-glow" />
       <div className="absolute bottom-1/3 left-10 w-16 h-16 bg-accent/20 rounded-full animate-glow animation-delay-2000" />
+      
+      {/* Demo Modal */}
+      <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
     </section>
   );
 };

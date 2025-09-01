@@ -1,16 +1,44 @@
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Menu } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Get initial session
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+    
+    getSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const handleSignIn = () => {
-    navigate('/auth');
+    navigate('/');
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed Out",
+      description: "You have been successfully signed out.",
+    });
+    navigate('/');
   };
 
   const handleGetStarted = () => {
@@ -58,18 +86,20 @@ export const Header = () => {
           <div className="hidden md:flex items-center gap-4">
             <Button 
               variant="ghost" 
-              onClick={handleSignIn}
-              aria-label="Sign in to your account"
+              onClick={user ? handleSignOut : handleSignIn}
+              aria-label={user ? "Sign out of your account" : "Sign in to your account"}
             >
-              Sign In
+              {user ? "Sign Out" : "Sign In"}
             </Button>
-            <Button 
-              variant="default" 
-              onClick={handleGetStarted}
-              aria-label="Get started with AjeroCompute"
-            >
-              Get Started
-            </Button>
+            {user && (
+              <Button 
+                variant="default" 
+                onClick={handleGetStarted}
+                aria-label="Get started with AjeroCompute"
+              >
+                Get Started
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -121,18 +151,20 @@ export const Header = () => {
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
                 <Button 
                   variant="ghost" 
-                  onClick={handleSignIn}
-                  aria-label="Sign in to your account"
+                  onClick={user ? handleSignOut : handleSignIn}
+                  aria-label={user ? "Sign out of your account" : "Sign in to your account"}
                 >
-                  Sign In
+                  {user ? "Sign Out" : "Sign In"}
                 </Button>
-                <Button 
-                  variant="default" 
-                  onClick={handleGetStarted}
-                  aria-label="Get started with AjeroCompute"
-                >
-                  Get Started
-                </Button>
+                {user && (
+                  <Button 
+                    variant="default" 
+                    onClick={handleGetStarted}
+                    aria-label="Get started with AjeroCompute"
+                  >
+                    Get Started
+                  </Button>
+                )}
               </div>
             </nav>
           </div>

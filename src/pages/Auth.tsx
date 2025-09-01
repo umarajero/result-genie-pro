@@ -23,7 +23,7 @@ const Auth = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/');
+        navigate('/dashboard');
       }
     };
 
@@ -36,7 +36,7 @@ const Auth = () => {
           title: "Welcome!",
           description: "You have successfully signed in.",
         });
-        navigate('/');
+        navigate('/dashboard');
       }
     });
 
@@ -192,13 +192,9 @@ const Auth = () => {
             )}
 
             <div className="mt-6 text-center">
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate('/')}
-                className="text-muted-foreground"
-              >
-                Back to Home
-              </Button>
+              <p className="text-muted-foreground text-sm">
+                Please sign in to access all features
+              </p>
             </div>
           </CardContent>
         </Card>

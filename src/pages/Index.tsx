@@ -10,48 +10,26 @@ import { Footer } from "@/components/Footer";
 import { StudentDataProvider } from "@/hooks/useStudentData";
 
 const Index = () => {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check initial session
-    const checkUser = async () => {
+    const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        navigate('/auth');
-      } else {
-        setUser(session.user);
+        navigate('/');
       }
-      setLoading(false);
     };
 
-    checkUser();
+    checkAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session) {
-        navigate('/auth');
-      } else {
-        setUser(session.user);
+        navigate('/');
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null; // Will redirect to auth
-  }
 
   return (
     <StudentDataProvider>

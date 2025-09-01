@@ -78,6 +78,7 @@ export const HeroSection = () => {
               <Button 
                 variant="academic" 
                 size="lg"
+                className="text-white"
                 onClick={handleWatchDemo}
                 aria-label="Watch demonstration video"
               >

@@ -52,7 +52,7 @@ export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
     name: "ElevateHer Innovation Space Limited",
     address: "",
     session: new Date().getFullYear().toString(),
-    term: "First",
+    term: "",
     principalName: "",
     logo: "/lovable-uploads/7cdd4f04-6759-4df0-98ca-039c85f03aa2.png",
     signatories: {

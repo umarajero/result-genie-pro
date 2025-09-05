@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, School, Check, Link, Image } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Upload, School, Check, Link, Image, Users, FileText, Award } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useStudentData } from "@/hooks/useStudentData";
 
@@ -73,8 +74,13 @@ export const SchoolInfoForm = () => {
       name: schoolInfo?.name || "ElevateHer Innovation Space Limited",
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
+      term: schoolInfo?.term || "First",
       principalName: schoolInfo?.principalName || "",
-      logo: logoSrc
+      logo: logoSrc,
+      signatories: schoolInfo?.signatories || {
+        statementOfResult: { classTeacher: "", instructor: "" },
+        certificate: { classTeacher: "", instructor: "" }
+      }
     });
   };
 
@@ -84,9 +90,33 @@ export const SchoolInfoForm = () => {
       name: schoolInfo?.name || "ElevateHer Innovation Space Limited",
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
+      term: schoolInfo?.term || "First",
       principalName: schoolInfo?.principalName || "",
       logo: schoolInfo?.logo || "/lovable-uploads/7cdd4f04-6759-4df0-98ca-039c85f03aa2.png",
+      signatories: schoolInfo?.signatories || {
+        statementOfResult: { classTeacher: "", instructor: "" },
+        certificate: { classTeacher: "", instructor: "" }
+      },
       [field]: value
+    });
+  };
+
+  const handleSignatoryChange = (documentType: 'statementOfResult' | 'certificate', signatoryType: 'classTeacher' | 'instructor', value: string) => {
+    setSchoolInfo({
+      ...schoolInfo,
+      name: schoolInfo?.name || "ElevateHer Innovation Space Limited",
+      address: schoolInfo?.address || "",
+      session: schoolInfo?.session || new Date().getFullYear().toString(),
+      term: schoolInfo?.term || "First",
+      principalName: schoolInfo?.principalName || "",
+      logo: schoolInfo?.logo || "/lovable-uploads/7cdd4f04-6759-4df0-98ca-039c85f03aa2.png",
+      signatories: {
+        ...schoolInfo?.signatories,
+        [documentType]: {
+          ...schoolInfo?.signatories?.[documentType],
+          [signatoryType]: value
+        }
+      }
     });
   };
 
@@ -133,16 +163,34 @@ export const SchoolInfoForm = () => {
               </div>
 
               {/* Academic Session */}
-              <div className="space-y-2">
-                <Label htmlFor="academic-session">Academic Session</Label>
-                <Input
-                  id="academic-session"
-                  type="text"
-                  placeholder="e.g., 2024/2025"
-                  value={schoolInfo?.session || ""}
-                  onChange={(e) => handleSchoolInfoChange('session', e.target.value)}
-                  className="w-full"
-                />
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="academic-session">Academic Session</Label>
+                  <Input
+                    id="academic-session"
+                    type="text"
+                    placeholder="e.g., 2024/2025"
+                    value={schoolInfo?.session || ""}
+                    onChange={(e) => handleSchoolInfoChange('session', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="session-term">Session Term</Label>
+                  <Select
+                    value={schoolInfo?.term || "First"}
+                    onValueChange={(value) => handleSchoolInfoChange('term', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select term" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="First">First Term</SelectItem>
+                      <SelectItem value="Second">Second Term</SelectItem>
+                      <SelectItem value="Third">Third Term</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Principal Name */}
@@ -239,6 +287,78 @@ export const SchoolInfoForm = () => {
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* Signatories Section */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="w-5 h-5 text-primary" />
+                  <Label className="text-lg font-semibold">Document Signatories</Label>
+                </div>
+                
+                {/* Statement of Result Signatories */}
+                <div className="space-y-4 p-4 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <FileText className="w-4 h-4 text-primary" />
+                    <Label className="font-medium">Statement of Result</Label>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="statement-class-teacher">Class Teacher Name</Label>
+                      <Input
+                        id="statement-class-teacher"
+                        type="text"
+                        placeholder="Enter class teacher's name"
+                        value={schoolInfo?.signatories?.statementOfResult?.classTeacher || ""}
+                        onChange={(e) => handleSignatoryChange('statementOfResult', 'classTeacher', e.target.value)}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="statement-instructor">Instructor Name</Label>
+                      <Input
+                        id="statement-instructor"
+                        type="text"
+                        placeholder="Enter instructor's name"
+                        value={schoolInfo?.signatories?.statementOfResult?.instructor || ""}
+                        onChange={(e) => handleSignatoryChange('statementOfResult', 'instructor', e.target.value)}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Certificate Signatories */}
+                <div className="space-y-4 p-4 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Award className="w-4 h-4 text-primary" />
+                    <Label className="font-medium">Certificate</Label>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="certificate-class-teacher">Class Teacher Name</Label>
+                      <Input
+                        id="certificate-class-teacher"
+                        type="text"
+                        placeholder="Enter class teacher's name"
+                        value={schoolInfo?.signatories?.certificate?.classTeacher || ""}
+                        onChange={(e) => handleSignatoryChange('certificate', 'classTeacher', e.target.value)}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="certificate-instructor">Instructor Name</Label>
+                      <Input
+                        id="certificate-instructor"
+                        type="text"
+                        placeholder="Enter instructor's name"
+                        value={schoolInfo?.signatories?.certificate?.instructor || ""}
+                        onChange={(e) => handleSignatoryChange('certificate', 'instructor', e.target.value)}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Status indicator */}

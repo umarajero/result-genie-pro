@@ -19,6 +19,10 @@ interface StatementOfResultProps {
     grade: string;
   }>;
   dateIssued: string;
+  signatories?: {
+    classTeacher?: string;
+    instructor?: string;
+  };
 }
 
 export const StatementOfResult = ({
@@ -35,7 +39,8 @@ export const StatementOfResult = ({
   schoolContact,
   schoolLogo,
   subjects,
-  dateIssued
+  dateIssued,
+  signatories
 }: StatementOfResultProps) => {
   const totalMarks = subjects.reduce((sum, subject) => sum + subject.score, 0);
   const averageScore = Math.round(totalMarks / subjects.length);
@@ -182,12 +187,16 @@ export const StatementOfResult = ({
       <div className="grid md:grid-cols-2 gap-8 pt-6 border-t-2 border-secondary">
         <div className="text-center">
           <div className="h-16 border-b border-muted-foreground mb-2"></div>
-          <p className="font-semibold text-foreground">Class Teacher</p>
+          <p className="font-semibold text-foreground">
+            {signatories?.classTeacher || "Class Teacher"}
+          </p>
           <p className="text-muted-foreground text-sm">Signature & Date</p>
         </div>
         <div className="text-center">
           <div className="h-16 border-b border-muted-foreground mb-2"></div>
-          <p className="font-semibold text-foreground">Instructor Name</p>
+          <p className="font-semibold text-foreground">
+            {signatories?.instructor || "Instructor"}
+          </p>
           <p className="text-muted-foreground text-sm">Signature & Date</p>
         </div>
       </div>

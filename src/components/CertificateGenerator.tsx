@@ -269,7 +269,7 @@ export const CertificateGenerator = () => {
             serialNumber={currentStudent.serialNumber}
             regNumber={currentStudent.regNumber}
             session={schoolInfo?.session || new Date().getFullYear().toString()}
-            term="First Term"
+            term={`${schoolInfo?.term || "First"} Term`}
             position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
             totalStudents={students.length}
             schoolName={schoolInfo?.name || ""}
@@ -278,13 +278,14 @@ export const CertificateGenerator = () => {
             schoolLogo={schoolInfo?.logo}
             subjects={subjects}
             dateIssued={new Date().toLocaleDateString()}
+            signatories={schoolInfo?.signatories?.statementOfResult}
           />
         ) : (
           <Certificate
             studentName={currentStudent.name}
             className={currentStudent.class}
             session={schoolInfo?.session || new Date().getFullYear().toString()}
-            term="First Term"
+            term={`${schoolInfo?.term || "First"} Term`}
             position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
             totalStudents={students.length}
             schoolName={schoolInfo?.name || ""}
@@ -294,6 +295,7 @@ export const CertificateGenerator = () => {
             averageScore={averageScore}
             overallGrade={getGradeFromAverage(averageScore)}
             dateIssued={new Date().toLocaleDateString()}
+            signatories={schoolInfo?.signatories?.certificate}
           />
         )}
       </div>

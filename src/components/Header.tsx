@@ -58,12 +58,11 @@ export const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-primary rounded-lg">
-              <GraduationCap className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Graderly</h1>
-            </div>
+            <img 
+              src="/lovable-uploads/f4ac4579-3ae7-44b0-a427-cbd2839d5198.png" 
+              alt="Graderly Logo" 
+              className="h-10 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}

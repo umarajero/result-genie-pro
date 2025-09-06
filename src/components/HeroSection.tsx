@@ -34,7 +34,7 @@ export const HeroSection = () => {
       
       <div className="container mx-auto px-4 pt-20 pb-16 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
-          <div className="text-white space-y-8">
+          <div className="text-white space-y-8 relative z-20">
             <div className="flex items-center justify-center lg:justify-start mb-8">
               <img 
                 src="/lovable-uploads/18c709a7-c2f3-4dfd-813e-20f80ab00fb9.png" 
@@ -43,7 +43,7 @@ export const HeroSection = () => {
               />
             </div>
             
-            <p className="text-xl lg:text-2xl text-white leading-relaxed max-w-2xl drop-shadow-md">
+            <p className="text-xl lg:text-2xl font-medium leading-relaxed max-w-2xl" style={{ color: '#ffffff', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
               Transform your school's result management with automated certificate generation, 
               parent portals, and professional result statements.
             </p>

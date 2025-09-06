@@ -35,13 +35,12 @@ export const HeroSection = () => {
       <div className="container mx-auto px-4 pt-20 pb-16 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
           <div className="text-white space-y-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
-                <GraduationCap className="w-8 h-8" />
-              </div>
-              <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                Graderly
-              </h1>
+            <div className="flex items-center justify-center lg:justify-start mb-6">
+              <img 
+                src="/lovable-uploads/18c709a7-c2f3-4dfd-813e-20f80ab00fb9.png" 
+                alt="Graderly Logo" 
+                className="h-16 w-auto"
+              />
             </div>
             
             <p className="text-xl lg:text-2xl text-white/90 leading-relaxed max-w-2xl">

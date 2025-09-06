@@ -178,14 +178,14 @@ export const SchoolInfoForm = () => {
                 <div className="space-y-2">
                   <Label htmlFor="session-term">Session Term (Optional)</Label>
                   <Select
-                    value={schoolInfo?.term || ""}
-                    onValueChange={(value) => handleSchoolInfoChange('term', value)}
+                    value={schoolInfo?.term || "none"}
+                    onValueChange={(value) => handleSchoolInfoChange('term', value === "none" ? "" : value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select term (optional)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       <SelectItem value="First">First Term</SelectItem>
                       <SelectItem value="Second">Second Term</SelectItem>
                       <SelectItem value="Third">Third Term</SelectItem>

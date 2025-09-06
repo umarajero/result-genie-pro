@@ -7,10 +7,10 @@ import { Play, X, ChevronRight, ChevronLeft, Upload, Award, Users, FileSpreadshe
 const demoSteps = [
   {
     id: 1,
-    title: "Welcome to AjeroCompute",
+    title: "Welcome to Graderly",
     description: "Transform your school's result management with automated certificate generation, parent portals, and professional result statements.",
     icon: <Award className="w-8 h-8 text-primary" />,
-    content: "AjeroCompute simplifies the entire process of managing student results, from data import to certificate generation."
+    content: "Graderly simplifies the entire process of managing student results, from data import to certificate generation."
   },
   {
     id: 2,
@@ -71,7 +71,7 @@ export const DemoModal = ({ isOpen, onClose }: DemoModalProps) => {
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
         <DialogHeader className="border-b pb-4">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-bold">AjeroCompute Demo</DialogTitle>
+            <DialogTitle className="text-2xl font-bold">Graderly Demo</DialogTitle>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="w-5 h-5" />
             </Button>
@@ -88,7 +88,7 @@ export const DemoModal = ({ isOpen, onClose }: DemoModalProps) => {
               <div>
                 <h3 className="text-xl font-semibold mb-2">Interactive Demo</h3>
                 <p className="text-muted-foreground max-w-md mx-auto">
-                  Take a guided tour of AjeroCompute and see how easy it is to manage student results and generate certificates.
+                  Take a guided tour of Graderly and see how easy it is to manage student results and generate certificates.
                 </p>
               </div>
               <Button onClick={startDemo} size="lg" className="gap-2">

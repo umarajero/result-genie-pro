@@ -24,7 +24,7 @@ export const HeroSection = () => {
     setIsDemoOpen(true);
     toast({
       title: "Demo Starting",
-      description: "Take an interactive tour of AjeroCompute features!",
+      description: "Take an interactive tour of Graderly features!",
     });
   };
 
@@ -40,7 +40,7 @@ export const HeroSection = () => {
                 <GraduationCap className="w-8 h-8" />
               </div>
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                AjeroCompute
+                Graderly
               </h1>
             </div>
             
@@ -70,7 +70,7 @@ export const HeroSection = () => {
                 size="lg" 
                 className="group" 
                 onClick={handleGetStarted}
-                aria-label="Start using AjeroCompute for free"
+                aria-label="Start using Graderly for free"
               >
                 Get Started Free
                 <GraduationCap className="w-5 h-5 ml-2 group-hover:animate-float" />

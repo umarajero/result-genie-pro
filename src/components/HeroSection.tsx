@@ -43,7 +43,7 @@ export const HeroSection = () => {
               />
             </div>
             
-            <p className="text-xl lg:text-2xl text-white/90 leading-relaxed max-w-2xl">
+            <p className="text-xl lg:text-2xl text-white leading-relaxed max-w-2xl drop-shadow-md">
               Transform your school's result management with automated certificate generation, 
               parent portals, and professional result statements.
             </p>

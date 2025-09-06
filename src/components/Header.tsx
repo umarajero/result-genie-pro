@@ -59,7 +59,7 @@ export const Header = () => {
           {/* Logo */}
           <div className="flex items-center gap-3">
             <img 
-              src="/lovable-uploads/f4ac4579-3ae7-44b0-a427-cbd2839d5198.png" 
+              src="/lovable-uploads/8b58d07f-e486-4b5d-be7f-07d694ad2d7a.png" 
               alt="Graderly Logo" 
               className="h-10 w-auto"
             />

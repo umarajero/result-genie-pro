@@ -309,7 +309,7 @@ export const SchoolInfoForm = () => {
                       <Select
                         value={
                           schoolInfo?.signatories?.statementOfResult?.classTeacher ? 'classTeacher' :
-                          schoolInfo?.signatories?.statementOfResult?.instructor ? 'instructor' : ''
+                          schoolInfo?.signatories?.statementOfResult?.instructor ? 'instructor' : 'none'
                         }
                         onValueChange={(value) => {
                           if (value === 'classTeacher') {
@@ -323,6 +323,7 @@ export const SchoolInfoForm = () => {
                           <SelectValue placeholder="Select signatory type" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="none">Select signatory type</SelectItem>
                           <SelectItem value="classTeacher">Class Teacher</SelectItem>
                           <SelectItem value="instructor">Instructor</SelectItem>
                         </SelectContent>
@@ -373,7 +374,7 @@ export const SchoolInfoForm = () => {
                       <Select
                         value={
                           schoolInfo?.signatories?.certificate?.classTeacher ? 'classTeacher' :
-                          schoolInfo?.signatories?.certificate?.instructor ? 'instructor' : ''
+                          schoolInfo?.signatories?.certificate?.instructor ? 'instructor' : 'none'
                         }
                         onValueChange={(value) => {
                           if (value === 'classTeacher') {
@@ -387,6 +388,7 @@ export const SchoolInfoForm = () => {
                           <SelectValue placeholder="Select signatory type" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="none">Select signatory type</SelectItem>
                           <SelectItem value="classTeacher">Class Teacher</SelectItem>
                           <SelectItem value="instructor">Instructor</SelectItem>
                         </SelectContent>

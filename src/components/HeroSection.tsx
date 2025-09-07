@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Upload, Award, Users } from "lucide-react";
 import heroImage from "@/assets/hero-education.jpg";
-import graderlyLogo from "@/assets/graderly-logo-white.png";
+import professionalLogo from "@/assets/graderly-professional-logo.png";
 import { useToast } from "@/hooks/use-toast";
 import { DemoModal } from "./DemoModal";
 import { useState } from "react";
@@ -38,9 +38,9 @@ export const HeroSection = () => {
           <div className="text-white space-y-8 relative z-20">
             <div className="flex items-center justify-center lg:justify-start mb-8">
               <img 
-                src={graderlyLogo}
-                alt="Graderly Logo" 
-                className="h-24 lg:h-32 w-auto drop-shadow-lg"
+                src={professionalLogo}
+                alt="Graderly - Professional School Management System" 
+                className="h-20 lg:h-28 w-auto drop-shadow-lg"
               />
             </div>
             

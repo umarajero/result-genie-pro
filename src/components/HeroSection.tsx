@@ -29,7 +29,7 @@ export const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen bg-gradient-hero overflow-hidden">
+    <section className="relative min-h-screen bg-primary overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
       
       <div className="container mx-auto px-4 pt-20 pb-16 relative z-10">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Play, X, ChevronRight, ChevronLeft, Upload, Award, Users, FileSpreadsheet } from "lucide-react";
 
 const demoSteps = [
@@ -10,35 +11,40 @@ const demoSteps = [
     title: "Welcome to Graderly",
     description: "Transform your school's result management with automated certificate generation, parent portals, and professional result statements.",
     icon: <Award className="w-8 h-8 text-primary" />,
-    content: "Graderly simplifies the entire process of managing student results, from data import to certificate generation."
+    content: "Graderly simplifies the entire process of managing student results, from data import to certificate generation.",
+    avatar: { fallback: "AD", role: "Administrator" }
   },
   {
     id: 2,
     title: "Step 1: Upload Student Data",
     description: "Import your student data easily using Excel or CSV files",
     icon: <Upload className="w-8 h-8 text-secondary" />,
-    content: "Simply drag and drop your Excel or CSV file containing student information, subjects, and grades. Our system automatically processes and validates the data."
+    content: "Simply drag and drop your Excel or CSV file containing student information, subjects, and grades. Our system automatically processes and validates the data.",
+    avatar: { fallback: "TC", role: "Teacher" }
   },
   {
     id: 3,
     title: "Step 2: Generate Certificates",
     description: "Automatically create professional certificates for all students",
     icon: <Award className="w-8 h-8 text-accent" />,
-    content: "With one click, generate beautifully designed certificates for all students. Customize templates with your school's branding and information."
+    content: "With one click, generate beautifully designed certificates for all students. Customize templates with your school's branding and information.",
+    avatar: { fallback: "ST", role: "Student" }
   },
   {
     id: 4,
     title: "Step 3: Parent Portal Access",
     description: "Parents can securely access their child's results and certificates",
     icon: <Users className="w-8 h-8 text-primary" />,
-    content: "Send secure links to parents so they can view and download their child's results, certificates, and academic progress reports."
+    content: "Send secure links to parents so they can view and download their child's results, certificates, and academic progress reports.",
+    avatar: { fallback: "PR", role: "Parent" }
   },
   {
     id: 5,
     title: "Step 4: Result Statements",
     description: "Generate comprehensive result statements and reports",
     icon: <FileSpreadsheet className="w-8 h-8 text-secondary" />,
-    content: "Create detailed result statements with grades, positions, and academic summaries. Export in multiple formats for official records."
+    content: "Create detailed result statements with grades, positions, and academic summaries. Export in multiple formats for official records.",
+    avatar: { fallback: "PR", role: "Principal" }
   }
 ];
 
@@ -117,10 +123,20 @@ export const DemoModal = ({ isOpen, onClose }: DemoModalProps) => {
 
               {/* Step Content */}
               <div className="bg-muted/30 rounded-lg p-8 text-center space-y-4">
-                <div className="flex justify-center">
+                <div className="flex justify-center items-center gap-4">
+                  <Avatar className="w-12 h-12 border-2 border-primary/20">
+                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                      {currentStepData.avatar.fallback}
+                    </AvatarFallback>
+                  </Avatar>
                   {currentStepData.icon}
                 </div>
-                <h3 className="text-2xl font-bold">{currentStepData.title}</h3>
+                <div className="space-y-1">
+                  <h3 className="text-2xl font-bold">{currentStepData.title}</h3>
+                  <Badge variant="secondary" className="text-xs">
+                    {currentStepData.avatar.role} View
+                  </Badge>
+                </div>
                 <p className="text-lg text-muted-foreground">{currentStepData.description}</p>
                 <p className="max-w-2xl mx-auto">{currentStepData.content}</p>
               </div>

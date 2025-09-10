@@ -56,13 +56,8 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <img 
-              src="/lovable-uploads/18c709a7-c2f3-4dfd-813e-20f80ab00fb9.png" 
-              alt="Graderly Logo" 
-              className="h-10 w-auto"
-            />
+          {/* Navigation spacer */}
+          <div className="flex items-center">
           </div>
 
           {/* Desktop Navigation */}

@@ -79,7 +79,54 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      experts_public: {
+        Row: {
+          availability: string | null
+          bio: string | null
+          certifications: string | null
+          created_at: string | null
+          education: string | null
+          experience: string | null
+          full_name: string | null
+          hourly_rate: number | null
+          id: string | null
+          location: string | null
+          rating: number | null
+          specialization: string | null
+          total_reviews: number | null
+        }
+        Insert: {
+          availability?: string | null
+          bio?: string | null
+          certifications?: string | null
+          created_at?: string | null
+          education?: string | null
+          experience?: string | null
+          full_name?: string | null
+          hourly_rate?: number | null
+          id?: string | null
+          location?: string | null
+          rating?: number | null
+          specialization?: string | null
+          total_reviews?: number | null
+        }
+        Update: {
+          availability?: string | null
+          bio?: string | null
+          certifications?: string | null
+          created_at?: string | null
+          education?: string | null
+          experience?: string | null
+          full_name?: string | null
+          hourly_rate?: number | null
+          id?: string | null
+          location?: string | null
+          rating?: number | null
+          specialization?: string | null
+          total_reviews?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

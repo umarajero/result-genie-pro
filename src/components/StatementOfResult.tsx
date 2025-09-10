@@ -105,12 +105,6 @@ export const StatementOfResult = ({
           </div>
         </div>
         <div className="space-y-3">
-          {serialNumber && (
-            <div className="flex items-center gap-3">
-              <span className="font-semibold text-foreground min-w-[120px]">S/N:</span>
-              <span className="text-foreground">{serialNumber}</span>
-            </div>
-          )}
           {regNumber && (
             <div className="flex items-center gap-3">
               <span className="font-semibold text-foreground min-w-[120px]">REG No:</span>

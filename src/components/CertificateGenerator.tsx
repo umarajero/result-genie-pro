@@ -5,7 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StatementOfResult } from './StatementOfResult';
 import { Certificate } from './Certificate';
+import { CustomizableCertificate } from './CustomizableCertificate';
+import { TemplateSelector } from './TemplateSelector';
 import { useStudentData } from '@/hooks/useStudentData';
+import { useTemplateCustomization } from '@/hooks/useTemplateCustomization';
 import { ChevronLeft, ChevronRight, Download, Users, Award, FileText, Medal } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
@@ -22,9 +25,11 @@ const getOrdinalSuffix = (num: number): string => {
 
 export const CertificateGenerator = () => {
   const { students, uploadedFileName, schoolInfo } = useStudentData();
+  const { selectedTemplate, customization } = useTemplateCustomization();
   const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
   const [activeTab, setActiveTab] = useState("statement");
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const certificateRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -198,7 +203,7 @@ export const CertificateGenerator = () => {
           {/* Document Type Tabs */}
           <div className="mb-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="statement" className="flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Statement of Result
@@ -206,6 +211,10 @@ export const CertificateGenerator = () => {
                 <TabsTrigger value="certificate" className="flex items-center gap-2">
                   <Medal className="w-4 h-4" />
                   Certificate
+                </TabsTrigger>
+                <TabsTrigger value="custom" className="flex items-center gap-2">
+                  <Award className="w-4 h-4" />
+                  Custom Template
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -241,6 +250,14 @@ export const CertificateGenerator = () => {
             <div className="flex gap-2">
               <Button
                 variant="outline"
+                onClick={() => setShowTemplateSelector(!showTemplateSelector)}
+                disabled={isDownloading}
+              >
+                <Award className="w-4 h-4 mr-2" />
+                {showTemplateSelector ? 'Hide Templates' : 'Choose Template'}
+              </Button>
+              <Button
+                variant="outline"
                 onClick={handleDownloadCertificate}
                 disabled={isDownloading}
               >
@@ -259,6 +276,20 @@ export const CertificateGenerator = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Template Selector */}
+      {showTemplateSelector && (
+        <TemplateSelector
+          selectedTemplate={selectedTemplate}
+          onTemplateSelect={(template) => {
+            // This will be handled by the context
+          }}
+          customization={customization}
+          onCustomizationChange={(customization) => {
+            // This will be handled by the context
+          }}
+        />
+      )}
 
       {/* Document Preview */}
       <div ref={certificateRef}>
@@ -280,7 +311,7 @@ export const CertificateGenerator = () => {
             dateIssued={new Date().toLocaleDateString()}
             signatories={schoolInfo?.signatories?.statementOfResult}
           />
-        ) : (
+        ) : activeTab === "certificate" ? (
           <Certificate
             studentName={currentStudent.name}
             className={currentStudent.class}
@@ -297,6 +328,33 @@ export const CertificateGenerator = () => {
             dateIssued={new Date().toLocaleDateString()}
             signatories={schoolInfo?.signatories?.certificate}
           />
+        ) : selectedTemplate ? (
+          <CustomizableCertificate
+            studentName={currentStudent.name}
+            className={currentStudent.class}
+            session={schoolInfo?.session || new Date().getFullYear().toString()}
+            term={`${schoolInfo?.term || "First"} Term`}
+            position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
+            totalStudents={students.length}
+            schoolName={schoolInfo?.name || ""}
+            schoolAddress={schoolInfo?.address || ""}
+            schoolContact=""
+            schoolLogo={schoolInfo?.logo}
+            averageScore={averageScore}
+            overallGrade={getGradeFromAverage(averageScore)}
+            dateIssued={new Date().toLocaleDateString()}
+            signatories={schoolInfo?.signatories?.certificate}
+            template={selectedTemplate}
+            customization={customization}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <Award className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No Template Selected</h3>
+            <p className="text-muted-foreground">
+              Click "Choose Template" to select and customize a certificate template.
+            </p>
+          </div>
         )}
       </div>
     </div>

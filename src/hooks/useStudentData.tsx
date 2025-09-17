@@ -17,7 +17,6 @@ export interface StudentRecord {
 export interface SchoolInfo {
   name: string;
   address?: string;
-  principalName?: string;
   session?: string;
   term?: string;
   logo?: string;
@@ -53,7 +52,6 @@ export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
     address: "",
     session: new Date().getFullYear().toString(),
     term: "",
-    principalName: "",
     logo: "/lovable-uploads/7cdd4f04-6759-4df0-98ca-039c85f03aa2.png",
     signatories: {
       statementOfResult: {

@@ -90,8 +90,6 @@ export const SchoolInfoForm = () => {
       name: schoolInfo?.name || "",
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
-      term: schoolInfo?.term || "First",
-      principalName: schoolInfo?.principalName || "",
       logo: schoolInfo?.logo || "/lovable-uploads/7cdd4f04-6759-4df0-98ca-039c85f03aa2.png",
       signatories: schoolInfo?.signatories || {
         statementOfResult: { classTeacher: "", instructor: "" },
@@ -108,7 +106,6 @@ export const SchoolInfoForm = () => {
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
       term: schoolInfo?.term || "First",
-      principalName: schoolInfo?.principalName || "",
       logo: schoolInfo?.logo || "/lovable-uploads/7cdd4f04-6759-4df0-98ca-039c85f03aa2.png",
       signatories: {
         ...schoolInfo?.signatories,
@@ -195,17 +192,6 @@ export const SchoolInfoForm = () => {
               </div>
 
               {/* Principal Name */}
-              <div className="space-y-2">
-                <Label htmlFor="principal-name">Principal/Head Name</Label>
-                <Input
-                  id="principal-name"
-                  type="text"
-                  placeholder="Enter the principal or head's name"
-                  value={schoolInfo?.principalName || ""}
-                  onChange={(e) => handleSchoolInfoChange('principalName', e.target.value)}
-                  className="w-full"
-                />
-              </div>
 
               {/* Logo Upload */}
               <div className="space-y-2">

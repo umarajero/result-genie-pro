@@ -314,8 +314,13 @@ export const SchoolInfoForm = () => {
                         onValueChange={(value) => {
                           if (value === 'classTeacher') {
                             handleSignatoryChange('statementOfResult', 'instructor', '');
+                            handleSignatoryChange('statementOfResult', 'classTeacher', schoolInfo?.signatories?.statementOfResult?.classTeacher || '');
                           } else if (value === 'instructor') {
                             handleSignatoryChange('statementOfResult', 'classTeacher', '');
+                            handleSignatoryChange('statementOfResult', 'instructor', schoolInfo?.signatories?.statementOfResult?.instructor || '');
+                          } else if (value === 'none') {
+                            handleSignatoryChange('statementOfResult', 'classTeacher', '');
+                            handleSignatoryChange('statementOfResult', 'instructor', '');
                           }
                         }}
                       >
@@ -330,8 +335,7 @@ export const SchoolInfoForm = () => {
                       </Select>
                     </div>
                     
-                    {(schoolInfo?.signatories?.statementOfResult?.classTeacher !== undefined && 
-                      schoolInfo?.signatories?.statementOfResult?.classTeacher !== '') && (
+                    {(schoolInfo?.signatories?.statementOfResult?.classTeacher !== undefined) && (
                       <div className="space-y-2">
                         <Label htmlFor="statement-class-teacher">Class Teacher Name</Label>
                         <Input
@@ -345,8 +349,7 @@ export const SchoolInfoForm = () => {
                       </div>
                     )}
                     
-                    {(schoolInfo?.signatories?.statementOfResult?.instructor !== undefined && 
-                      schoolInfo?.signatories?.statementOfResult?.instructor !== '') && (
+                    {(schoolInfo?.signatories?.statementOfResult?.instructor !== undefined) && (
                       <div className="space-y-2">
                         <Label htmlFor="statement-instructor">Instructor Name</Label>
                         <Input
@@ -379,8 +382,13 @@ export const SchoolInfoForm = () => {
                         onValueChange={(value) => {
                           if (value === 'classTeacher') {
                             handleSignatoryChange('certificate', 'instructor', '');
+                            handleSignatoryChange('certificate', 'classTeacher', schoolInfo?.signatories?.certificate?.classTeacher || '');
                           } else if (value === 'instructor') {
                             handleSignatoryChange('certificate', 'classTeacher', '');
+                            handleSignatoryChange('certificate', 'instructor', schoolInfo?.signatories?.certificate?.instructor || '');
+                          } else if (value === 'none') {
+                            handleSignatoryChange('certificate', 'classTeacher', '');
+                            handleSignatoryChange('certificate', 'instructor', '');
                           }
                         }}
                       >
@@ -395,8 +403,7 @@ export const SchoolInfoForm = () => {
                       </Select>
                     </div>
                     
-                    {(schoolInfo?.signatories?.certificate?.classTeacher !== undefined && 
-                      schoolInfo?.signatories?.certificate?.classTeacher !== '') && (
+                    {(schoolInfo?.signatories?.certificate?.classTeacher !== undefined) && (
                       <div className="space-y-2">
                         <Label htmlFor="certificate-class-teacher">Class Teacher Name</Label>
                         <Input
@@ -410,8 +417,7 @@ export const SchoolInfoForm = () => {
                       </div>
                     )}
                     
-                    {(schoolInfo?.signatories?.certificate?.instructor !== undefined && 
-                      schoolInfo?.signatories?.certificate?.instructor !== '') && (
+                    {(schoolInfo?.signatories?.certificate?.instructor !== undefined) && (
                       <div className="space-y-2">
                         <Label htmlFor="certificate-instructor">Instructor Name</Label>
                         <Input

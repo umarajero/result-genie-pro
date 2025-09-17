@@ -56,7 +56,7 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   }
   
   // Extract school information from the first few rows
-  let schoolInfo: SchoolInfo = { name: 'Academic Institution' };
+  let schoolInfo: SchoolInfo = { name: '' };
   let headerRowIndex = 0;
   
   // Look for school information in the first 8 rows

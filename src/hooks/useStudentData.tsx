@@ -49,7 +49,7 @@ export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
   const [students, setStudents] = useState<StudentRecord[]>([]);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>({
-    name: "ElevateHer Innovation Space Limited",
+    name: "",
     address: "",
     session: new Date().getFullYear().toString(),
     term: "",

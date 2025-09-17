@@ -71,7 +71,7 @@ export const SchoolInfoForm = () => {
   const updateSchoolInfoLogo = (logoSrc: string) => {
     setSchoolInfo({
       ...schoolInfo,
-      name: schoolInfo?.name || "ElevateHer Innovation Space Limited",
+      name: schoolInfo?.name || "",
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
       term: schoolInfo?.term || "First",
@@ -87,7 +87,7 @@ export const SchoolInfoForm = () => {
   const handleSchoolInfoChange = (field: string, value: string) => {
     setSchoolInfo({
       ...schoolInfo,
-      name: schoolInfo?.name || "ElevateHer Innovation Space Limited",
+      name: schoolInfo?.name || "",
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
       term: schoolInfo?.term || "First",
@@ -104,7 +104,7 @@ export const SchoolInfoForm = () => {
   const handleSignatoryChange = (documentType: 'statementOfResult' | 'certificate', signatoryType: 'classTeacher' | 'instructor', value: string) => {
     setSchoolInfo({
       ...schoolInfo,
-      name: schoolInfo?.name || "ElevateHer Innovation Space Limited",
+      name: schoolInfo?.name || "",
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
       term: schoolInfo?.term || "First",
@@ -142,7 +142,7 @@ export const SchoolInfoForm = () => {
                 <Input
                   id="school-name"
                   type="text"
-                  placeholder="Enter your school or institution name"
+                  placeholder="Enter school/institution name"
                   value={schoolInfo?.name || ""}
                   onChange={(e) => handleSchoolInfoChange('name', e.target.value)}
                   className="w-full"

@@ -274,7 +274,7 @@ export const CertificateGenerator = () => {
             totalStudents={students.length}
             schoolName={schoolInfo?.name || ""}
             schoolAddress={schoolInfo?.address || ""}
-            schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
+            schoolContact=""
             schoolLogo={schoolInfo?.logo}
             subjects={subjects}
             dateIssued={new Date().toLocaleDateString()}

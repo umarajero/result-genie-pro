@@ -55,6 +55,8 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
     throw new Error('File must contain at least a header row and one data row');
   }
   
+  console.log('Starting file analysis...');
+  
   // Extract school information from the first few rows
   let schoolInfo: SchoolInfo = { name: '' };
   let headerRowIndex = 0;
@@ -131,6 +133,8 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   
   const headers = data[headerRowIndex].map((header: any) => String(header).toLowerCase().trim());
   
+  console.log('Headers found:', headers);
+  
   // More flexible name detection
   const nameIndex = headers.findIndex(h => 
     h.includes('name') || h.includes('student') || h === 'names' || h === 'full name'
@@ -159,10 +163,34 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   const subjectIndices: number[] = [];
   const subjectNames: string[] = [];
   
+  // Identify ID column patterns to exclude from calculations
+  const idColumnPatterns = ['id', 'student id', 'student number', 'studentid', 'student_id', 'student_number'];
+  
+  // Find and log ID columns for transparency
+  const idColumns = headers.filter((header, index) => 
+    idColumnPatterns.some(pattern => header.includes(pattern))
+  );
+  
+  if (idColumns.length > 0) {
+    console.log('ID columns identified and excluded from calculations:', idColumns);
+  }
+  
   headers.forEach((header, index) => {
-    if (index !== nameIndex && index !== classIndex && index !== serialNumberIndex && index !== regNumberIndex && header && header.length > 0) {
+    const isIdColumn = idColumnPatterns.some(pattern => header.includes(pattern));
+    
+    if (index !== nameIndex && 
+        index !== classIndex && 
+        index !== serialNumberIndex && 
+        index !== regNumberIndex && 
+        !isIdColumn && 
+        header && 
+        header.length > 0) {
       // Skip common non-subject columns
-      const skipColumns = ['total', 'average', 'percentage', 'rank', 'position', 'remarks', 'attendance', 's/n', 'sn', 'serial', 'reg', 'registration', 'regno'];
+      const skipColumns = [
+        'total', 'average', 'percentage', 'rank', 'position', 'remarks', 
+        'attendance', 's/n', 'sn', 'serial', 'reg', 'registration', 'regno',
+        ...idColumnPatterns
+      ];
       const isSkipColumn = skipColumns.some(skip => header.includes(skip));
       
       if (!isSkipColumn) {
@@ -192,6 +220,10 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   if (subjectIndices.length === 0) {
     throw new Error('File must contain at least one subject column with numeric scores');
   }
+  
+  // Log which columns are being used for calculations (for debugging)
+  console.log('Columns identified for calculations:', subjectNames);
+  console.log('Excluded columns:', headers.filter((_, index) => !subjectIndices.includes(index) && index !== nameIndex && index !== classIndex));
   
   const students: StudentRecord[] = [];
   

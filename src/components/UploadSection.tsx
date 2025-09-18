@@ -66,6 +66,12 @@ export const UploadSection = () => {
           result = await processExcelFile(file);
         }
         
+        // Log analysis results for user feedback
+        console.log('File analysis complete:', {
+          studentsFound: result.students.length,
+          subjectsIdentified: result.students[0] ? Object.keys(result.students[0].subjects).length : 0
+        });
+        
         setStudents(result.students);
         setSchoolInfo(result.schoolInfo);
         setUploadedFileName(file.name);
@@ -73,7 +79,7 @@ export const UploadSection = () => {
         
         toast({
           title: "File processed successfully!",
-          description: `Found ${result.students.length} student records. Ready to generate certificates.`,
+          description: `Found ${result.students.length} student records with ${result.students[0] ? Object.keys(result.students[0].subjects).length : 0} subjects. ID columns excluded from calculations.`,
         });
       } catch (error) {
         setUploadStatus('error');

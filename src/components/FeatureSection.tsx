@@ -87,7 +87,7 @@ export const FeatureSection = () => {
     {
       icon: FileSpreadsheet,
       title: "Result Processing",
-      description: "Automatically process grades, calculate averages, and generate reports",
+      description: "Automatically process grades, calculate averages, and generate reports (ID columns excluded from calculations)",
       color: "text-accent",
       bgColor: "bg-accent/10"
     },

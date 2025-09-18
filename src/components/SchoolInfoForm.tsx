@@ -259,7 +259,7 @@ export const SchoolInfoForm = () => {
                   <div className="mt-4">
                     <div className="w-20 h-20 border rounded-lg overflow-hidden bg-muted mx-auto">
                       <img
-                        src={logoPreview}
+                        src={logoPr}
                         alt="School logo preview"
                         className="w-full h-full object-contain"
                         onError={() => {

@@ -22,7 +22,8 @@ import {
   Zap,
   Crown,
   Target,
-  Gamepad2
+  Gamepad2,
+  Star
 } from 'lucide-react';
 import { defaultTemplates, CertificateTemplate, TemplateCustomization } from '@/types/certificateTemplates';
 import { useToast } from '@/hooks/use-toast';

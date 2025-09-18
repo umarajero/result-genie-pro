@@ -18,6 +18,7 @@ import { useStudentData } from "@/hooks/useStudentData";
 import { processExcelFile, processCsvFile } from "@/services/fileProcessor";
 import { CertificateGenerator } from "./CertificateGenerator";
 import { SchoolInfoForm } from "./SchoolInfoForm";
+import { ProjectManager } from './ProjectManager';
 
 export const UploadSection = () => {
   const [dragActive, setDragActive] = useState(false);
@@ -137,6 +138,11 @@ export const UploadSection = () => {
         <SchoolInfoForm />
 
         <div className="max-w-4xl mx-auto">
+          {/* Project Manager */}
+          <div className="mb-8">
+            <ProjectManager />
+          </div>
+
           <Card className="border-2 border-dashed border-primary/20 bg-primary/5 hover:border-primary/40 transition-colors">
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl">

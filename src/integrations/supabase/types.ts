@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      projects: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          school_info: Json
+          student_data: Json
+          updated_at: string | null
+          uploaded_file_name: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          school_info?: Json
+          student_data?: Json
+          updated_at?: string | null
+          uploaded_file_name?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          school_info?: Json
+          student_data?: Json
+          updated_at?: string | null
+          uploaded_file_name?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       experts: {
         Row: {
           availability: string

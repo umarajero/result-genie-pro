@@ -18,7 +18,11 @@ import {
   Sparkles,
   Award,
   Briefcase,
-  GraduationCap
+  GraduationCap,
+  Zap,
+  Crown,
+  Target,
+  Gamepad2
 } from 'lucide-react';
 import { defaultTemplates, CertificateTemplate, TemplateCustomization } from '@/types/certificateTemplates';
 import { useToast } from '@/hooks/use-toast';
@@ -87,12 +91,25 @@ export const TemplateSelector = ({
 
   const getTemplateIcon = (templateId: string) => {
     switch (templateId) {
-      case 'academic-prestige':
-        return <GraduationCap className="w-5 h-5" />;
-      case 'professional-corporate':
-        return <Briefcase className="w-5 h-5" />;
-      case 'luxury-premium':
+      case 'modern-asymmetric':
+        return <Zap className="w-5 h-5" />;
+      case 'minimalist-zen':
+        return <Target className="w-5 h-5" />;
+      case 'vintage-ornate':
         return <Sparkles className="w-5 h-5" />;
+      case 'corporate-landscape':
+        return <Briefcase className="w-5 h-5" />;
+      case 'artistic-creative':
+        return <Gamepad2 className="w-5 h-5" />;
+      case 'tech-futuristic':
+        return <Zap className="w-5 h-5" />;
+      case 'luxury-gold':
+        return <Crown className="w-5 h-5" />;
+      case 'playful-kids':
+        return <Gamepad2 className="w-5 h-5" />;
+      case 'academic-prestige':
+      case 'academic-formal':
+        return <GraduationCap className="w-5 h-5" />;
       default:
         return <Award className="w-5 h-5" />;
     }
@@ -158,29 +175,55 @@ export const TemplateSelector = ({
                       <div className="space-y-3">
                         {/* Template Preview */}
                         <div 
-                          className="h-32 rounded-lg border-2 border-dashed border-border flex items-center justify-center"
+                          className="h-40 rounded-lg border-2 border-dashed border-border flex items-center justify-center relative overflow-hidden"
                           style={{ backgroundColor: template.style.backgroundColor }}
                         >
-                          <div className="text-center p-4">
-                            <div className="text-sm font-semibold mb-1" style={{ color: template.style.accentColor }}>
+                          <div className="text-center p-4 relative z-10">
+                            <div 
+                              className="font-semibold mb-1" 
+                              style={{ 
+                                color: template.style.accentColor,
+                                fontSize: template.style.fontSize.subtitle,
+                                fontWeight: template.style.fontWeights.title
+                              }}
+                            >
                               CERTIFICATE
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div 
+                              className="text-muted-foreground"
+                              style={{ fontSize: template.style.fontSize.body }}
+                            >
                               {template.name} Style
                             </div>
+                            {/* Mini decorative elements */}
+                            {template.style.decorativeElements.includes('corner-flourishes') && (
+                              <>
+                                <div className="absolute top-1 left-1">
+                                  <Sparkles className="w-3 h-3" style={{ color: template.style.accentColor }} />
+                                </div>
+                                <div className="absolute top-1 right-1">
+                                  <Star className="w-3 h-3" style={{ color: template.style.accentColor }} />
+                                </div>
+                              </>
+                            )}
+                            {template.style.decorativeElements.includes('royal-crown') && (
+                              <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+                                <Crown className="w-4 h-4" style={{ color: template.style.accentColor }} />
+                              </div>
+                            )}
                           </div>
                         </div>
                         
                         {/* Template Features */}
                         <div className="flex flex-wrap gap-1">
                           <Badge variant="secondary" className="text-xs">
-                            {template.style.fontFamily}
+                            {template.style.fontSize.title}
                           </Badge>
                           <Badge variant="secondary" className="text-xs">
                             {template.layout.headerLayout}
                           </Badge>
                           <Badge variant="secondary" className="text-xs">
-                            {template.style.decorativeElements.length} decorations
+                            {template.layout.orientation}
                           </Badge>
                         </div>
                       </div>
@@ -435,6 +478,7 @@ export const TemplateSelector = ({
                       style={{ 
                         backgroundColor: customization.colors.background,
                         fontFamily: customization.fonts.body,
+                        fontSize: '14px',
                         border: customization.decorations.showBorder 
                           ? `${customization.decorations.borderWidth === 'thin' ? '1px' : 
                               customization.decorations.borderWidth === 'medium' ? '2px' :
@@ -444,38 +488,45 @@ export const TemplateSelector = ({
                     >
                       <div className="text-center space-y-4">
                         <h1 
-                          className="text-3xl font-bold"
+                          className="font-bold"
                           style={{ 
                             color: customization.colors.primary,
-                            fontFamily: customization.fonts.heading
+                            fontFamily: customization.fonts.heading,
+                            fontSize: '32px'
                           }}
                         >
                           CERTIFICATE OF ACHIEVEMENT
                         </h1>
                         <div 
-                          className="text-lg"
-                          style={{ color: customization.colors.secondary }}
+                          style={{ 
+                            color: customization.colors.secondary,
+                            fontSize: '16px'
+                          }}
                         >
                           This is to certify that
                         </div>
                         <div 
-                          className="text-2xl font-bold py-4 border-b-2"
+                          className="font-bold py-4 border-b-2"
                           style={{ 
                             color: customization.colors.accent,
-                            borderColor: customization.colors.primary
+                            borderColor: customization.colors.primary,
+                            fontSize: '24px'
                           }}
                         >
                           [Student Name]
                         </div>
-                        <div className="text-base" style={{ color: customization.colors.text }}>
+                        <div style={{ 
+                          color: customization.colors.text,
+                          fontSize: '14px'
+                        }}>
                           has successfully completed the requirements and is awarded this certificate
                         </div>
                         <div className="pt-8">
                           <div 
-                            className="text-sm"
                             style={{ 
                               fontFamily: customization.fonts.signature,
-                              color: customization.colors.text
+                              color: customization.colors.text,
+                              fontSize: '12px'
                             }}
                           >
                             ________________________<br />

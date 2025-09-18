@@ -18,7 +18,13 @@ import {
   Award,
   Briefcase,
   GraduationCap,
-  Table
+  Table,
+  Zap,
+  Crown,
+  Target,
+  Gamepad2,
+  Monitor,
+  Sparkles as SparklesIcon
 } from 'lucide-react';
 import { defaultStatementTemplates, StatementTemplate, StatementCustomization } from '@/types/statementTemplates';
 import { useToast } from '@/hooks/use-toast';
@@ -84,12 +90,21 @@ export const StatementTemplateSelector = () => {
 
   const getTemplateIcon = (templateId: string) => {
     switch (templateId) {
-      case 'academic-prestige':
-        return <GraduationCap className="w-5 h-5" />;
-      case 'professional-corporate':
-        return <Briefcase className="w-5 h-5" />;
-      case 'luxury-premium':
+      case 'modern-bold':
+        return <Zap className="w-5 h-5" />;
+      case 'luxury-dark':
+        return <Crown className="w-5 h-5" />;
+      case 'compact-efficient':
+        return <Target className="w-5 h-5" />;
+      case 'elegant-script':
+        return <SparklesIcon className="w-5 h-5" />;
+      case 'industrial-bold':
         return <Award className="w-5 h-5" />;
+      case 'zen-vertical':
+        return <Target className="w-5 h-5" />;
+      case 'academic-prestige':
+      case 'classic-formal':
+        return <GraduationCap className="w-5 h-5" />;
       default:
         return <FileText className="w-5 h-5" />;
     }
@@ -155,20 +170,31 @@ export const StatementTemplateSelector = () => {
                       <div className="space-y-3">
                         {/* Template Preview */}
                         <div 
-                          className="h-32 rounded-lg border-2 border-dashed border-border flex items-center justify-center"
+                          className="h-40 rounded-lg border-2 border-dashed border-border flex items-center justify-center relative overflow-hidden"
                           style={{ backgroundColor: template.style.backgroundColor }}
                         >
-                          <div className="text-center p-4">
-                            <div className="text-sm font-semibold mb-1" style={{ color: template.style.accentColor }}>
+                          <div className="text-center p-4 relative z-10">
+                            <div 
+                              className="font-semibold mb-1" 
+                              style={{ 
+                                color: template.style.accentColor,
+                                fontSize: template.style.fontSize.subtitle,
+                                fontWeight: template.style.fontWeights.title
+                              }}
+                            >
                               STATEMENT OF RESULT
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div 
+                              className="text-muted-foreground"
+                              style={{ fontSize: template.style.fontSize.body }}
+                            >
                               {template.name} Style
                             </div>
-                            <div className="mt-2 space-y-1">
-                              <div className="h-1 bg-current opacity-20 rounded"></div>
-                              <div className="h-1 bg-current opacity-20 rounded"></div>
-                              <div className="h-1 bg-current opacity-20 rounded w-3/4"></div>
+                            {/* Mini table preview */}
+                            <div className="mt-2 space-y-1" style={{ fontSize: template.style.fontSize.table }}>
+                              <div className="h-1 bg-current opacity-30 rounded" style={{ backgroundColor: template.style.accentColor }}></div>
+                              <div className="h-1 bg-current opacity-20 rounded" style={{ backgroundColor: template.style.accentColor }}></div>
+                              <div className="h-1 bg-current opacity-20 rounded w-3/4" style={{ backgroundColor: template.style.accentColor }}></div>
                             </div>
                           </div>
                         </div>
@@ -176,13 +202,13 @@ export const StatementTemplateSelector = () => {
                         {/* Template Features */}
                         <div className="flex flex-wrap gap-1">
                           <Badge variant="secondary" className="text-xs">
-                            {template.style.fontFamily}
+                            {template.style.fontSize.title}
                           </Badge>
                           <Badge variant="secondary" className="text-xs">
                             {template.layout.tableLayout}
                           </Badge>
                           <Badge variant="secondary" className="text-xs">
-                            {template.style.decorativeElements.length} decorations
+                            {template.layout.orientation}
                           </Badge>
                         </div>
                       </div>
@@ -503,6 +529,7 @@ export const StatementTemplateSelector = () => {
                       style={{ 
                         backgroundColor: customization.colors.background,
                         fontFamily: customization.fonts.body,
+                        fontSize: '14px',
                         border: customization.decorations.showBorder 
                           ? `${customization.decorations.borderWidth === 'thin' ? '1px' : 
                               customization.decorations.borderWidth === 'medium' ? '2px' :
@@ -512,17 +539,20 @@ export const StatementTemplateSelector = () => {
                     >
                       <div className="text-center space-y-4">
                         <h1 
-                          className="text-3xl font-bold"
+                          className="font-bold"
                           style={{ 
                             color: customization.colors.primary,
-                            fontFamily: customization.fonts.heading
+                            fontFamily: customization.fonts.heading,
+                            fontSize: '28px'
                           }}
                         >
                           STATEMENT OF RESULT
                         </h1>
                         <div 
-                          className="text-lg"
-                          style={{ color: customization.colors.secondary }}
+                          style={{ 
+                            color: customization.colors.secondary,
+                            fontSize: '16px'
+                          }}
                         >
                           Academic Performance Report
                         </div>
@@ -533,6 +563,7 @@ export const StatementTemplateSelector = () => {
                             className="w-full"
                             style={{ 
                               fontFamily: customization.fonts.table,
+                              fontSize: '12px',
                               border: customization.table.showBorders ? `${customization.table.borderWidth === 'thin' ? '1px' : customization.table.borderWidth === 'medium' ? '2px' : '3px'} solid ${customization.colors.tableBorder}` : 'none'
                             }}
                           >

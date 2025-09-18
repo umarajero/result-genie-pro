@@ -16,7 +16,7 @@ export const HeroSection = () => {
     }
     toast({
       title: "Let's Get Started!",
-      description: "Upload your student data to begin generating certificates.",
+      description: "Upload your student data to begin generating certificates with ResultGenie.",
     });
   };
 
@@ -24,7 +24,7 @@ export const HeroSection = () => {
     setIsDemoOpen(true);
     toast({
       title: "Demo Starting",
-      description: "Take an interactive tour of Graderly features!",
+      description: "Take an interactive tour of ResultGenie features!",
     });
   };
 

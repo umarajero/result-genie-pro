@@ -105,6 +105,7 @@ const Auth = () => {
               <GraduationCap className="w-8 h-8 text-white" />
             </div>
             <span className="text-2xl font-bold text-white">Graderly</span>
+            <span className="text-2xl font-bold text-white">ResultGenie</span>
           </div>
         </div>
 

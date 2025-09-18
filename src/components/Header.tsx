@@ -48,7 +48,7 @@ export const Header = () => {
     }
     toast({
       title: "Getting Started",
-      description: "Scroll down to upload your first file!",
+      description: "Scroll down to upload your first file with ResultGenie!",
     });
   };
 

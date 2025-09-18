@@ -87,7 +87,7 @@ export const FeatureSection = () => {
     {
       icon: FileSpreadsheet,
       title: "Result Processing",
-      description: "Automatically process grades, calculate averages, and generate reports (ID columns excluded from calculations)",
+      description: "Automatically process grades, calculate averages, and generate reports. ID/identifier columns are automatically excluded from all calculations.",
       color: "text-accent",
       bgColor: "bg-accent/10"
     },

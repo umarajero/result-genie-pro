@@ -79,7 +79,7 @@ export const UploadSection = () => {
         
         toast({
           title: "File processed successfully!",
-          description: `Found ${result.students.length} student records with ${result.students[0] ? Object.keys(result.students[0].subjects).length : 0} subjects. ID columns excluded from calculations.`,
+          description: `Found ${result.students.length} student records with ${result.students[0] ? Object.keys(result.students[0].subjects).length : 0} subjects. ID/identifier columns automatically excluded from grade calculations.`,
         });
       } catch (error) {
         setUploadStatus('error');

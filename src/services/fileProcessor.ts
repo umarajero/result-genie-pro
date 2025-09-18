@@ -164,11 +164,42 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   const subjectNames: string[] = [];
   
   // Identify ID column patterns to exclude from calculations
-  const idColumnPatterns = ['id', 'student id', 'student number', 'studentid', 'student_id', 'student_number'];
+  const idColumnPatterns = [
+    'id', 'student id', 'student number', 'studentid', 'student_id', 'student_number',
+    'student no', 'studentno', 'student_no', 'roll no', 'rollno', 'roll_no',
+    'admission no', 'admissionno', 'admission_no', 'matric no', 'matricno', 'matric_no',
+    'index no', 'indexno', 'index_no', 'candidate no', 'candidateno', 'candidate_no'
+  ];
   
   // Find and log ID columns for transparency
-  const idColumns = headers.filter((header, index) => 
-    idColumnPatterns.some(pattern => header.includes(pattern))
+  const idColumns: string[] = [];
+  const idColumnIndices: number[] = [];
+  
+  headers.forEach((header, index) => {
+    const isIdColumn = idColumnPatterns.some(pattern => header.includes(pattern));
+    if (isIdColumn) {
+      idColumns.push(header);
+      idColumnIndices.push(index);
+    }
+  });
+  
+  // Enhanced logging for transparency
+  console.log('=== COLUMN ANALYSIS ===');
+  console.log('Total columns found:', headers.length);
+  console.log('All headers:', headers);
+  console.log('ID columns identified and EXCLUDED from calculations:', idColumns.length > 0 ? idColumns : 'None');
+  
+  // Validate that we're not accidentally including ID columns in calculations
+  const validateNoIdColumns = (columnName: string, columnIndex: number) => {
+    if (idColumnIndices.includes(columnIndex)) {
+      console.warn(`WARNING: Attempted to include ID column "${columnName}" in calculations - BLOCKED`);
+      return false;
+    }
+    return true;
+  };
+  
+  headers.forEach((header, index) => {
+    const isIdColumn = idColumnPatterns.some(pattern => header.includes(pattern));
   );
   
   if (idColumns.length > 0) {
@@ -182,18 +213,17 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
         index !== classIndex && 
         index !== serialNumberIndex && 
         index !== regNumberIndex && 
-        !isIdColumn && 
+        !isIdColumn &&
         header && 
         header.length > 0) {
       // Skip common non-subject columns
       const skipColumns = [
         'total', 'average', 'percentage', 'rank', 'position', 'remarks', 
-        'attendance', 's/n', 'sn', 'serial', 'reg', 'registration', 'regno',
-        ...idColumnPatterns
+        'attendance', 's/n', 'sn', 'serial', 'reg', 'registration', 'regno'
       ];
       const isSkipColumn = skipColumns.some(skip => header.includes(skip));
       
-      if (!isSkipColumn) {
+      if (!isSkipColumn && validateNoIdColumns(header, index)) {
         // Check if the column contains mostly numeric data
         let numericCount = 0;
         let totalCount = 0;
@@ -221,9 +251,22 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
     throw new Error('File must contain at least one subject column with numeric scores');
   }
   
-  // Log which columns are being used for calculations (for debugging)
-  console.log('Columns identified for calculations:', subjectNames);
-  console.log('Excluded columns:', headers.filter((_, index) => !subjectIndices.includes(index) && index !== nameIndex && index !== classIndex));
+  // Enhanced logging for complete transparency
+  console.log('=== CALCULATION COLUMNS ===');
+  console.log('Subject columns INCLUDED in calculations:', subjectNames);
+  console.log('Number of subjects for calculation:', subjectNames.length);
+  
+  const excludedColumns = headers.filter((_, index) => 
+    !subjectIndices.includes(index) && 
+    index !== nameIndex && 
+    index !== classIndex && 
+    index !== serialNumberIndex && 
+    index !== regNumberIndex
+  );
+  console.log('=== EXCLUDED COLUMNS ===');
+  console.log('All excluded columns:', excludedColumns);
+  console.log('ID columns specifically excluded:', idColumns);
+  console.log('========================');
   
   const students: StudentRecord[] = [];
   

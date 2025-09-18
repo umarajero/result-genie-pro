@@ -200,7 +200,7 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   
   headers.forEach((header, index) => {
     const isIdColumn = idColumnPatterns.some(pattern => header.includes(pattern));
-  );
+  });
   
   if (idColumns.length > 0) {
     console.log('ID columns identified and excluded from calculations:', idColumns);

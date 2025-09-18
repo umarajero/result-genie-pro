@@ -9,6 +9,7 @@ import { ParentPortal } from "@/components/ParentPortal";
 import { Footer } from "@/components/Footer";
 import { StudentDataProvider } from "@/hooks/useStudentData";
 import { TemplateProvider } from "@/hooks/useTemplateCustomization";
+import { StatementProvider } from "@/hooks/useStatementCustomization";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -35,22 +36,24 @@ const Index = () => {
   return (
     <StudentDataProvider>
       <TemplateProvider>
-        <div className="min-h-screen">
-          <Header />
-          <main>
-            <HeroSection />
-            <section id="features">
-              <FeatureSection />
-            </section>
-            <section id="upload">
-              <UploadSection />
-            </section>
-            <section id="parent-portal">
-              <ParentPortal />
-            </section>
-          </main>
-          <Footer />
-        </div>
+        <StatementProvider>
+          <div className="min-h-screen">
+            <Header />
+            <main>
+              <HeroSection />
+              <section id="features">
+                <FeatureSection />
+              </section>
+              <section id="upload">
+                <UploadSection />
+              </section>
+              <section id="parent-portal">
+                <ParentPortal />
+              </section>
+            </main>
+            <Footer />
+          </div>
+        </StatementProvider>
       </TemplateProvider>
     </StudentDataProvider>
   );

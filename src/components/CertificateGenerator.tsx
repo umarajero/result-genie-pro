@@ -7,8 +7,11 @@ import { StatementOfResult } from './StatementOfResult';
 import { Certificate } from './Certificate';
 import { CustomizableCertificate } from './CustomizableCertificate';
 import { TemplateSelector } from './TemplateSelector';
+import { StatementTemplateSelector } from './StatementTemplateSelector';
+import { CustomizableStatementOfResult } from './CustomizableStatementOfResult';
 import { useStudentData } from '@/hooks/useStudentData';
 import { useTemplateCustomization } from '@/hooks/useTemplateCustomization';
+import { useStatementCustomization } from '@/hooks/useStatementCustomization';
 import { ChevronLeft, ChevronRight, Download, Users, Award, FileText, Medal } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
@@ -26,10 +29,12 @@ const getOrdinalSuffix = (num: number): string => {
 export const CertificateGenerator = () => {
   const { students, uploadedFileName, schoolInfo } = useStudentData();
   const { selectedTemplate, customization } = useTemplateCustomization();
+  const { selectedTemplate: selectedStatementTemplate, customization: statementCustomization } = useStatementCustomization();
   const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
   const [activeTab, setActiveTab] = useState("statement");
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [showStatementTemplateSelector, setShowStatementTemplateSelector] = useState(false);
   const certificateRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -250,11 +255,17 @@ export const CertificateGenerator = () => {
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={() => setShowTemplateSelector(!showTemplateSelector)}
+                onClick={() => {
+                  if (activeTab === "statement") {
+                    setShowStatementTemplateSelector(!showStatementTemplateSelector);
+                  } else {
+                    setShowTemplateSelector(!showTemplateSelector);
+                  }
+                }}
                 disabled={isDownloading}
               >
                 <Award className="w-4 h-4 mr-2" />
-                {showTemplateSelector ? 'Hide Templates' : 'Choose Template'}
+                {(activeTab === "statement" ? showStatementTemplateSelector : showTemplateSelector) ? 'Hide Templates' : 'Choose Template'}
               </Button>
               <Button
                 variant="outline"
@@ -278,7 +289,7 @@ export const CertificateGenerator = () => {
       </Card>
 
       {/* Template Selector */}
-      {showTemplateSelector && (
+      {showTemplateSelector && activeTab !== "statement" && (
         <TemplateSelector
           selectedTemplate={selectedTemplate}
           onTemplateSelect={(template) => {
@@ -291,26 +302,53 @@ export const CertificateGenerator = () => {
         />
       )}
 
+      {/* Statement Template Selector */}
+      {showStatementTemplateSelector && activeTab === "statement" && (
+        <StatementTemplateSelector />
+      )}
+
       {/* Document Preview */}
       <div ref={certificateRef}>
         {activeTab === "statement" ? (
-          <StatementOfResult
-            studentName={currentStudent.name}
-            className={currentStudent.class}
-            serialNumber={currentStudent.serialNumber}
-            regNumber={currentStudent.regNumber}
-            session={schoolInfo?.session || new Date().getFullYear().toString()}
-            term={`${schoolInfo?.term || "First"} Term`}
-            position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
-            totalStudents={students.length}
-            schoolName={schoolInfo?.name || ""}
-            schoolAddress={schoolInfo?.address || ""}
-            schoolContact=""
-            schoolLogo={schoolInfo?.logo}
-            subjects={subjects}
-            dateIssued={new Date().toLocaleDateString()}
-            signatories={schoolInfo?.signatories?.statementOfResult}
-          />
+          selectedStatementTemplate ? (
+            <CustomizableStatementOfResult
+              studentName={currentStudent.name}
+              className={currentStudent.class}
+              serialNumber={currentStudent.serialNumber}
+              regNumber={currentStudent.regNumber}
+              session={schoolInfo?.session || new Date().getFullYear().toString()}
+              term={`${schoolInfo?.term || "First"} Term`}
+              position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
+              totalStudents={students.length}
+              schoolName={schoolInfo?.name || ""}
+              schoolAddress={schoolInfo?.address || ""}
+              schoolContact=""
+              schoolLogo={schoolInfo?.logo}
+              subjects={subjects}
+              dateIssued={new Date().toLocaleDateString()}
+              signatories={schoolInfo?.signatories?.statementOfResult}
+              template={selectedStatementTemplate}
+              customization={statementCustomization}
+            />
+          ) : (
+            <StatementOfResult
+              studentName={currentStudent.name}
+              className={currentStudent.class}
+              serialNumber={currentStudent.serialNumber}
+              regNumber={currentStudent.regNumber}
+              session={schoolInfo?.session || new Date().getFullYear().toString()}
+              term={`${schoolInfo?.term || "First"} Term`}
+              position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
+              totalStudents={students.length}
+              schoolName={schoolInfo?.name || ""}
+              schoolAddress={schoolInfo?.address || ""}
+              schoolContact=""
+              schoolLogo={schoolInfo?.logo}
+              subjects={subjects}
+              dateIssued={new Date().toLocaleDateString()}
+              signatories={schoolInfo?.signatories?.statementOfResult}
+            />
+          )
         ) : activeTab === "certificate" ? (
           <Certificate
             studentName={currentStudent.name}

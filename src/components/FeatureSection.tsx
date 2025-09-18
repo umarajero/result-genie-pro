@@ -194,7 +194,7 @@ export const FeatureSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h3 className="text-3xl font-bold text-foreground mb-6">
-              Why Teachers Love Graderly
+              Why Teachers Love ResultGenie
             </h3>
             <div className="space-y-4">
               {benefits.map((benefit, index) => (
@@ -211,9 +211,9 @@ export const FeatureSection = () => {
                 variant="success" 
                 size="lg"
                 onClick={handleStartTrial}
-                aria-label="Start your free trial of Graderly"
+                aria-label="Start your free trial of ResultGenie"
               >
-                Start Your Free Trial
+                Start Your Free Trial with ResultGenie
                 <Zap className="w-5 h-5 ml-2" />
               </Button>
             </div>

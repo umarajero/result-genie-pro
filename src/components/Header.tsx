@@ -106,8 +106,13 @@ export const Header = () => {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
           >
-            <Menu className="w-5 h-5" />
-          </Button>
+        {/* Logo */}
+        <div className="flex items-center gap-3">
+          <img 
+            src="/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png" 
+            alt="ResultGenie Logo"
+            className="h-8 w-auto"
+          />
         </div>
 
         {/* Mobile Navigation */}

@@ -106,7 +106,7 @@ export const SchoolInfoForm = () => {
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
       term: schoolInfo?.term || "First",
-      logo: schoolInfo?.logo || "/lovable-uploads/7cdd4f04-6759-4df0-98ca-039c85f03aa2.png",
+      logo: schoolInfo?.logo || "/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png",
       signatories: {
         ...schoolInfo?.signatories,
         [documentType]: {

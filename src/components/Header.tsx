@@ -56,8 +56,13 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Navigation spacer */}
-          <div className="flex items-center">
+          {/* Logo */}
+          <div className="flex items-center gap-3">
+            <img 
+              src="/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png" 
+              alt="ResultGenie Logo"
+              className="h-8 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}
@@ -106,13 +111,8 @@ export const Header = () => {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
           >
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <img 
-            src="/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png" 
-            alt="ResultGenie Logo"
-            className="h-8 w-auto"
-          />
+            <Menu className="h-6 w-6" />
+          </Button>
         </div>
 
         {/* Mobile Navigation */}

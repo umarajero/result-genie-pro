@@ -38,13 +38,21 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Temporarily disable projects fetching until database is properly set up
-      console.log('Projects feature temporarily disabled - database not configured');
-      setProjects([]);
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      setProjects(data || []);
     } catch (error) {
       console.error('Error fetching projects:', error);
-      // Silently handle error for now
-      setProjects([]);
+      toast({
+        title: "Error Loading Projects",
+        description: "Failed to load your saved projects.",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -58,18 +66,33 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
     fileName?: string
   ) => {
     try {
-      // Temporarily disable project saving until database is properly set up
-      console.log('Project saving temporarily disabled - database not configured');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('projects')
+        .insert({
+          user_id: user.id,
+          name,
+          description,
+          school_info: schoolInfo,
+          student_data: studentData,
+          uploaded_file_name: fileName
+        });
+
+      if (error) throw error;
+
       toast({
-        title: "Feature Temporarily Disabled",
-        description: "Project saving will be available once database is configured.",
-        variant: "destructive"
+        title: "Project Saved",
+        description: `"${name}" has been saved successfully.`
       });
+
+      await refreshProjects();
     } catch (error) {
       console.error('Error saving project:', error);
       toast({
-        title: "Feature Temporarily Disabled",
-        description: "Project saving will be available once database is configured.",
+        title: "Save Failed",
+        description: "Failed to save the project. Please try again.",
         variant: "destructive"
       });
     }
@@ -85,18 +108,24 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteProject = async (projectId: string) => {
     try {
-      // Temporarily disable project deletion until database is properly set up
-      console.log('Project deletion temporarily disabled - database not configured');
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', projectId);
+
+      if (error) throw error;
+
       toast({
-        title: "Feature Temporarily Disabled",
-        description: "Project management will be available once database is configured.",
-        variant: "destructive"
+        title: "Project Deleted",
+        description: "Project has been deleted successfully."
       });
+
+      await refreshProjects();
     } catch (error) {
       console.error('Error deleting project:', error);
       toast({
-        title: "Feature Temporarily Disabled",
-        description: "Project management will be available once database is configured.",
+        title: "Delete Failed",
+        description: "Failed to delete the project. Please try again.",
         variant: "destructive"
       });
     }
@@ -104,18 +133,24 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
 
   const updateProject = async (projectId: string, updates: Partial<Project>) => {
     try {
-      // Temporarily disable project updates until database is properly set up
-      console.log('Project updates temporarily disabled - database not configured');
+      const { error } = await supabase
+        .from('projects')
+        .update(updates)
+        .eq('id', projectId);
+
+      if (error) throw error;
+
       toast({
-        title: "Feature Temporarily Disabled",
-        description: "Project management will be available once database is configured.",
-        variant: "destructive"
+        title: "Project Updated",
+        description: "Project has been updated successfully."
       });
+
+      await refreshProjects();
     } catch (error) {
       console.error('Error updating project:', error);
       toast({
-        title: "Feature Temporarily Disabled",
-        description: "Project management will be available once database is configured.",
+        title: "Update Failed",
+        description: "Failed to update the project. Please try again.",
         variant: "destructive"
       });
     }

@@ -46,11 +46,12 @@ export const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <img 
-                src="/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png" 
-                alt="ResultGenie Logo"
-                className="h-8 w-auto"
-              />
+              <div className="p-2 bg-gradient-primary rounded-lg">
+                <GraduationCap className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground">ResultGenie</h3>
+              </div>
             </div>
             <p className="text-muted-foreground">
               Empowering schools with modern result management, automated certificate generation, 

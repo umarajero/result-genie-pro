@@ -3,6 +3,8 @@ import { GraduationCap, Upload, Award, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DemoModal } from "./DemoModal";
 import { useState } from "react";
+import schoolLogo from "@/assets/school-logo.png";
+
 
 export const HeroSection = () => {
   const { toast } = useToast();
@@ -37,12 +39,12 @@ export const HeroSection = () => {
             {/* Large ResultGenie Logo */}
             <div className="flex justify-center lg:justify-start mb-6">
               <img 
-                src="/resultgenie-new-logo.png" 
+                src={schoolLogo}
                 alt="ResultGenie Logo"
                 className="h-32 w-auto lg:h-40 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = "/resultgenie-logo.png";
+                  target.src = "/school-logo.png";
                 }}
               />
             </div>

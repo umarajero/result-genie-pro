@@ -44,7 +44,7 @@ export const HeroSection = () => {
                 className="h-32 w-auto lg:h-40 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = "/school-logo.png";
+                  target.src ={schoolLogo};
                 }}
               />
             </div>

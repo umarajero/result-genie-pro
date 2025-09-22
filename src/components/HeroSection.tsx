@@ -4,6 +4,7 @@ import heroImage from "@/assets/hero-education.jpg";
 import { useToast } from "@/hooks/use-toast";
 import { DemoModal } from "./DemoModal";
 import { useState } from "react";
+import schoolLogo from "../assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png"
 
 export const HeroSection = () => {
   const { toast } = useToast();
@@ -33,7 +34,12 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
       
       <div className="container mx-auto px-4 pt-20 pb-16 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+        {/* Remove lg:grid-cols-2 to prevent two-column layout on large screens */}
+        <div className="flex justify-center">
+          <img src={schoolLogo} alt="school logo" className="w-1/5 h-25" />
+        </div>
+        
+        <div className="grid gap-12 items-center min-h-[80vh]">
           <div className="text-white space-y-8 relative z-20">
             
             <p className="text-xl lg:text-2xl font-medium leading-relaxed max-w-2xl" style={{ color: '#ffffff', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>

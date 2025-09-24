@@ -6,6 +6,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { FeatureSection } from "@/components/FeatureSection";
 import { UploadSection } from "@/components/UploadSection";
 import { ParentPortal } from "@/components/ParentPortal";
+import { PricingSection } from "@/components/PricingSection";
 import { Footer } from "@/components/Footer";
 import { StudentDataProvider } from "@/hooks/useStudentData";
 import { TemplateProvider } from "@/hooks/useTemplateCustomization";
@@ -48,6 +49,9 @@ const Index = () => {
                 </section>
                 <section id="upload">
                   <UploadSection />
+                </section>
+                <section id="pricing">
+                  <PricingSection />
                 </section>
                 <section id="parent-portal">
                   <ParentPortal />

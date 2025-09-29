@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { GraduationCap, Mail, Phone, MapPin, Facebook, Twitter, Linkedin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import ourlogo from "../assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png"
 
 export const Footer = () => {
   const { toast } = useToast();
@@ -47,12 +46,11 @@ export const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-2  rounded-lg">
-                <img src={ourlogo} alt="our logo" className="w-16 h-16 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-foreground">ResultGenie</h3>
-              </div>
+              <img 
+                src="/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png" 
+                alt="ResultGenie Logo"
+                className="h-8 w-auto"
+              />
             </div>
             <p className="text-muted-foreground">
               Empowering schools with modern result management, automated certificate generation, 
@@ -179,16 +177,15 @@ export const Footer = () => {
           <div className="grid md:grid-cols-3 gap-6">
             <div className="flex items-center gap-3">
               <Mail className="w-5 h-5 text-primary" />
-              <span className="text-muted-foreground">resultgen1@gmail.com</span>
+              <span className="text-muted-foreground">support@resultgeniepro.com</span>
             </div>
             <div className="flex items-center gap-3">
               <Phone className="w-5 h-5 text-primary" />
-              <span className="text-muted-foreground">+234 803 800 6869</span><br />
-              <span className="text-muted-foreground">+234 810 912 5731</span>
+              <span className="text-muted-foreground">+1 (555) 123-4567</span>
             </div>
             <div className="flex items-center gap-3">
               <MapPin className="w-5 h-5 text-primary" />
-              <span className="text-muted-foreground">Kano state, Nigeria</span>
+              <span className="text-muted-foreground">Education District, Tech City</span>
             </div>
           </div>
         </div>

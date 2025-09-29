@@ -15,9 +15,8 @@ export const SchoolInfoForm = () => {
   const { toast } = useToast();
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoUrl, setLogoUrl] = useState<string>("");
-  const [logoPreview, setLogoPreview] = useState<string | null>(
-    schoolInfo?.logo || null
-  );
+  // Set logoPreview to null initially (no image)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -106,7 +105,7 @@ export const SchoolInfoForm = () => {
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
       term: schoolInfo?.term || "First",
-      logo: schoolInfo?.logo || "/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png",
+      logo: schoolInfo?.logo || "/lovable-uploads/7cdd4f04-6759-4df0-98ca-039c85f03aa2.png",
       signatories: {
         ...schoolInfo?.signatories,
         [documentType]: {
@@ -120,7 +119,8 @@ export const SchoolInfoForm = () => {
   return (
     <section className="py-12 bg-background">
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
+        {/* Increased max width from max-w-2xl to max-w-4xl */}
+        <div className="max-w-4xl mx-auto">
           <Card className="border border-primary/20 bg-card">
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2 text-2xl">
@@ -255,9 +255,9 @@ export const SchoolInfoForm = () => {
                 </Tabs>
                 
                 {/* Logo Preview */}
-                {logoPreview && (
-                  <div className="mt-4">
-                    <div className="w-20 h-20 border rounded-lg overflow-hidden bg-muted mx-auto">
+                <div className="mt-4">
+                  <div className="w-20 h-20 border rounded-lg overflow-hidden bg-muted mx-auto flex items-center justify-center">
+                    {logoPreview ? (
                       <img
                         src={logoPreview}
                         alt="School logo preview"
@@ -271,9 +271,13 @@ export const SchoolInfoForm = () => {
                           setLogoPreview(null);
                         }}
                       />
-                    </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground text-center px-2">
+                        Upload school logo
+                      </span>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Signatories Section */}

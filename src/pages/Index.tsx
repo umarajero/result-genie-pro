@@ -42,20 +42,6 @@ const Index = () => {
           <StatementProvider>
             <div className="min-h-screen">
               <Header />
-              {/* School Logo Section */}
-              <div className="bg-background py-8 border-b border-border">
-                <div className="container mx-auto px-4 text-center">
-                  <img 
-                    src="/src/assets/school-logo.png" 
-                    alt="School Logo"
-                    className="h-16 w-auto mx-auto object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
-                </div>
-              </div>
               <main>
                 <HeroSection />
                 <section id="features">
@@ -64,11 +50,11 @@ const Index = () => {
                 <section id="upload">
                   <UploadSection />
                 </section>
-                <section id="parent-portal">
-                  <ParentPortal />
-                </section>
                 <section id="pricing">
                   <PricingSection />
+                </section>
+                <section id="parent-portal">
+                  <ParentPortal />
                 </section>
               </main>
               <Footer />

@@ -101,11 +101,11 @@ const Auth = () => {
         {/* Logo */}
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center space-x-2">
-            <img 
-              src="/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png" 
-              alt="ResultGenie Logo"
-              className="h-12 w-auto"
-            />
+            <div className="bg-primary rounded-full p-2">
+              <GraduationCap className="w-8 h-8 text-white" />
+            </div>
+            <span className="text-2xl font-bold text-white">Graderly</span>
+            <span className="text-2xl font-bold text-white">ResultGenie</span>
           </div>
         </div>
 

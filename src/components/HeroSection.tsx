@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Upload, Award, Users } from "lucide-react";
+import heroImage from "@/assets/hero-education.jpg";
 import { useToast } from "@/hooks/use-toast";
 import { DemoModal } from "./DemoModal";
 import { useState } from "react";
+import schoolLogo from "../assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png"
 
 export const HeroSection = () => {
   const { toast } = useToast();
@@ -32,22 +34,15 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
       
       <div className="container mx-auto px-4 pt-20 pb-16 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+        {/* Remove lg:grid-cols-2 to prevent two-column layout on large screens */}
+        <div className="flex justify-center">
+          <img src={schoolLogo} alt="school logo" className="w-1/5 h-25" />
+        </div>
+        
+        <div className="grid gap-12 items-center min-h-[80vh]">
           <div className="text-white space-y-8 relative z-20">
-            {/* Large ResultGenie Logo */}
-            <div className="flex justify-center lg:justify-start mb-6">
-              <img 
-                src="/resultgenie-new-logo.png" 
-                alt="ResultGenie Logo"
-                className="h-32 w-auto lg:h-40 object-contain"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/resultgenie-logo.png";
-                }}
-              />
-            </div>
             
-            <p className="text-2xl lg:text-3xl font-medium leading-relaxed max-w-2xl text-white">
+            <p className="text-xl lg:text-2xl font-medium leading-relaxed max-w-2xl" style={{ color: '#ffffff', textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
               Transform your school's result management with automated certificate generation, 
               parent portals, and professional result statements.
             </p>
@@ -93,7 +88,7 @@ export const HeroSection = () => {
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-academic">
               <img 
-                src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop&crop=center"
+                src={heroImage} 
                 alt="Modern Education Technology"
                 className="w-full h-auto transform hover:scale-105 transition-transform duration-500"
               />

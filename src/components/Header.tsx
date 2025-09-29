@@ -52,33 +52,50 @@ export const Header = () => {
     });
   };
 
+  const handleNavClick = (sectionId: string, sectionName: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+      toast({
+        title: `Navigating to ${sectionName}`,
+        description: `Scrolling to the ${sectionName} section.`,
+      });
+    }
+  };
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <img 
-              src="/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png" 
-              alt="ResultGenie Logo"
-              className="h-8 w-auto"
-            />
+          {/* Navigation spacer */}
+          <div className="flex items-center">
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
+            <button 
+              onClick={() => handleNavClick('features', 'Features')}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Features
-            </a>
-            <a href="#upload" className="text-muted-foreground hover:text-foreground transition-colors">
+            </button>
+            <button 
+              onClick={() => handleNavClick('upload', 'Upload')}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Upload
-            </a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+            </button>
+            <button 
+              onClick={() => handleNavClick('pricing', 'Pricing')}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Pricing
-            </a>
-            <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
+            </button>
+            <button 
+              onClick={() => handleNavClick('parent-portal', 'Contact')}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Contact
-            </a>
+            </button>
           </nav>
 
           {/* Desktop Actions */}
@@ -111,7 +128,7 @@ export const Header = () => {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
           >
-            <Menu className="h-6 w-6" />
+            <Menu className="w-5 h-5" />
           </Button>
         </div>
 
@@ -119,34 +136,42 @@ export const Header = () => {
         {isMenuOpen && (
           <div id="mobile-menu" className="md:hidden py-4 border-t border-border">
             <nav className="flex flex-col gap-4">
-              <a 
-                href="#features" 
+              <button 
+                onClick={() => {
+                  handleNavClick('features', 'Features');
+                  setIsMenuOpen(false);
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setIsMenuOpen(false)}
               >
                 Features
-              </a>
-              <a 
-                href="#upload" 
+              </button>
+              <button 
+                onClick={() => {
+                  handleNavClick('upload', 'Upload');
+                  setIsMenuOpen(false);
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setIsMenuOpen(false)}
               >
                 Upload
-              </a>
-              <a 
-                href="#pricing" 
+              </button>
+              <button 
+                onClick={() => {
+                  handleNavClick('pricing', 'Pricing');
+                  setIsMenuOpen(false);
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setIsMenuOpen(false)}
               >
                 Pricing
-              </a>
-              <a 
-                href="#contact" 
+              </button>
+              <button 
+                onClick={() => {
+                  handleNavClick('parent-portal', 'Contact');
+                  setIsMenuOpen(false);
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setIsMenuOpen(false)}
               >
                 Contact
-              </a>
+              </button>
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
                 <Button 
                   variant="ghost" 

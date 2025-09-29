@@ -90,7 +90,7 @@ const pricingTiers: PricingTier[] = [
     name: 'Enterprise',
     description: 'For large schools and educational districts',
     icon: <Crown className="w-6 h-6" />,
-    monthlyPrice: 2000,
+    monthlyPrice: 2500,
     yearlyPrice: 15000,
     studentLimit: 'Unlimited students',
     enterprise: true,

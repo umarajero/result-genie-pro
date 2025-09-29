@@ -1,494 +1,619 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from "react-konva";
-import useImage from "use-image";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { 
+  Palette, 
+  Type, 
+  Layout, 
+  Settings, 
+  Eye, 
+  Check,
+  FileText,
+  Award,
+  Briefcase,
+  GraduationCap,
+  Table,
+  Zap,
+  Crown,
+  Target,
+  Gamepad2,
+  Monitor,
+  Sparkles as SparklesIcon
+} from 'lucide-react';
+import { defaultStatementTemplates, StatementTemplate, StatementCustomization } from '@/types/statementTemplates';
+import { useToast } from '@/hooks/use-toast';
+import { useStatementCustomization } from '@/hooks/useStatementCustomization';
 
-// NOTE: This is a standalone React component (TypeScript) that implements a mini-Canva-like
-// template builder using react-konva. Drop it into your app (e.g. /components/TemplateBuilder.tsx)
-// and wire up routes as needed.
+export const StatementTemplateSelector = () => {
+  const { 
+    selectedTemplate, 
+    setSelectedTemplate, 
+    customization, 
+    setCustomization 
+  } = useStatementCustomization();
+  
+  const { toast } = useToast();
 
-// Basic element types
-type ElementType = "text" | "image" | "table";
-
-type BaseElement = {
-  id: string;
-  x: number;
-  y: number;
-  rotation?: number;
-  scaleX?: number;
-  scaleY?: number;
-  type: ElementType;
-  zIndex?: number;
-};
-
-type TextElement = BaseElement & {
-  type: "text";
-  text: string;
-  fontSize: number;
-  fontFamily: string;
-  fill: string;
-  fontStyle?: "normal" | "bold" | "italic";
-  width?: number;
-};
-
-type ImageElement = BaseElement & {
-  type: "image";
-  src: string; // dataURL or URL
-  width: number;
-  height: number;
-};
-
-type TableElement = BaseElement & {
-  type: "table";
-  columns: string[];
-  rows: string[][]; // array of rows
-  cellPadding?: number;
-  headerFill?: string;
-  rowFill?: string;
-  textColor?: string;
-};
-
-type Element = TextElement | ImageElement | TableElement;
-
-const defaultStageWidth = 900;
-const defaultStageHeight = 600;
-
-function uid(prefix = "el") {
-  return `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
-}
-
-// Small helper KonvaImage wrapper that loads from src
-const URLImage: React.FC<{ element: ImageElement; isSelected: boolean; onClick?: () => void; onTransform?: (newAttrs: Partial<ImageElement>) => void }> = ({ element, isSelected, onClick, onTransform }) => {
-  const [image] = useImage(element.src);
-  const shapeRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (shapeRef.current) {
-      // sync transforms back if needed
-      const node = shapeRef.current;
-      const scaleX = node.scaleX();
-      const scaleY = node.scaleY();
-      const width = node.width() * scaleX;
-      const height = node.height() * scaleY;
-      // call onTransform only when component unmounts? Keeping simple: call onTransform on mount
-      onTransform?.({ width, height, scaleX, scaleY });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return (
-    <KonvaImage
-      ref={shapeRef}
-      image={image}
-      x={element.x}
-      y={element.y}
-      width={element.width}
-      height={element.height}
-      rotation={element.rotation || 0}
-      draggable
-      onClick={onClick}
-      onTap={onClick}
-      onDragEnd={(e) => {
-        onTransform?.({ x: e.target.x(), y: e.target.y() });
-      }}
-      onTransformEnd={(e) => {
-        const node = e.target;
-        const scaleX = node.scaleX();
-        const scaleY = node.scaleY();
-        const width = Math.max(5, node.width() * scaleX);
-        const height = Math.max(5, node.height() * scaleY);
-        node.scaleX(1);
-        node.scaleY(1);
-        onTransform?.({ x: node.x(), y: node.y(), width, height });
-      }}
-    />
-  );
-};
-
-const TemplateBuilder: React.FC = () => {
-  const stageRef = useRef<any>(null);
-  const layerRef = useRef<any>(null);
-  const [elements, setElements] = useState<Element[]>(() => {
-    // try load from localStorage
-    try {
-      const raw = localStorage.getItem("builder_elements");
-      if (raw) return JSON.parse(raw) as Element[];
-    } catch (e) {
-      // ignore
-    }
-    // default starter elements
-    return [
-      {
-        id: uid("text"),
-        type: "text",
-        x: 50,
-        y: 40,
-        text: "STATEMENT OF RESULT",
-        fontSize: 28,
-        fontFamily: "Arial",
-        fill: "#1e3a8a",
-        width: 800,
-      } as TextElement,
-      {
-        id: uid("text2"),
-        type: "text",
-        x: 50,
-        y: 90,
-        text: "Academic Performance Report",
-        fontSize: 16,
-        fontFamily: "Arial",
-        fill: "#374151",
-        width: 800,
-      } as TextElement,
-    ];
-  });
-
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [stageSize, setStageSize] = useState({ width: defaultStageWidth, height: defaultStageHeight });
-
-  useEffect(() => {
-    // save to localStorage on change
-    localStorage.setItem("builder_elements", JSON.stringify(elements));
-  }, [elements]);
-
-  const addText = () => {
-    const newEl: TextElement = {
-      id: uid("text"),
-      type: "text",
-      x: 60,
-      y: 200,
-      text: "New text",
-      fontSize: 18,
-      fontFamily: "Arial",
-      fill: "#111827",
-      width: 400,
-    };
-    setElements((s) => [...s, newEl]);
-    setSelectedId(newEl.id);
-  };
-
-  const addImageFromFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const src = reader.result as string;
-      const imgEl: ImageElement = {
-        id: uid("img"),
-        type: "image",
-        x: 80,
-        y: 120,
-        src,
-        width: 160,
-        height: 80,
-      };
-      setElements((s) => [...s, imgEl]);
-      setSelectedId(imgEl.id);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const addTable = () => {
-    const tbl: TableElement = {
-      id: uid("tbl"),
-      type: "table",
-      x: 50,
-      y: 300,
-      columns: ["Subject", "Score", "Grade"],
-      rows: [
-        ["Mathematics", "85%", "A"],
-        ["English", "88%", "A"],
-        ["Science", "82%", "B"],
-      ],
-      cellPadding: 8,
-      headerFill: "#f3f4f6",
-      rowFill: "#ffffff",
-      textColor: "#111827",
-    };
-    setElements((s) => [...s, tbl]);
-    setSelectedId(tbl.id);
-  };
-
-  const updateElement = (id: string, patch: Partial<Element>) => {
-    setElements((list) => list.map((el) => (el.id === id ? { ...el, ...patch } : el)));
-  };
-
-  const removeElement = (id: string) => {
-    setElements((list) => list.filter((el) => el.id !== id));
-    if (selectedId === id) setSelectedId(null);
-  };
-
-  const bringForward = (id: string) => {
-    setElements((list) => {
-      const idx = list.findIndex((l) => l.id === id);
-      if (idx === -1 || idx === list.length - 1) return list;
-      const next = [...list];
-      const [item] = next.splice(idx, 1);
-      next.splice(idx + 1, 0, item);
-      return next;
+  const handleTemplateSelect = (template: StatementTemplate) => {
+    setSelectedTemplate(template);
+    toast({
+      title: "Template Selected",
+      description: `${template.name} template has been applied to your statements.`,
     });
   };
 
-  const sendBackward = (id: string) => {
-    setElements((list) => {
-      const idx = list.findIndex((l) => l.id === id);
-      if (idx <= 0) return list;
-      const next = [...list];
-      const [item] = next.splice(idx, 1);
-      next.splice(idx - 1, 0, item);
-      return next;
+  const handleColorChange = (colorType: keyof StatementCustomization['colors'], value: string) => {
+    setCustomization({
+      ...customization,
+      colors: {
+        ...customization.colors,
+        [colorType]: value
+      }
     });
   };
 
-  const exportToPNG = () => {
-    const uri = stageRef.current?.toDataURL({ pixelRatio: 2 });
-    if (!uri) return;
-    const link = document.createElement("a");
-    link.download = "statement.png";
-    link.href = uri;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  };
-
-  const exportToPDF = async () => {
-    // uses jspdf. Ensure you have `jspdf` installed in your project
-    // npm i jspdf
-    const uri = stageRef.current?.toDataURL({ pixelRatio: 2 });
-    if (!uri) return;
-    // dynamic import so we don't bloat bundle
-    const { jsPDF } = await import("jspdf");
-    const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [stageSize.width * 2, stageSize.height * 2] });
-    pdf.addImage(uri, "PNG", 0, 0, stageSize.width * 2, stageSize.height * 2);
-    pdf.save("statement.pdf");
-  };
-
-  const saveTemplateJSON = () => {
-    const data = {
-      stage: stageSize,
-      elements,
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "template.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const loadTemplateJSON = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(reader.result as string);
-        if (parsed?.elements) {
-          setElements(parsed.elements);
-          if (parsed.stage) setStageSize(parsed.stage);
-        }
-      } catch (e) {
-        alert("Invalid template file");
+  const handleFontChange = (fontType: keyof StatementCustomization['fonts'], value: string) => {
+    setCustomization({
+      ...customization,
+      fonts: {
+        ...customization.fonts,
+        [fontType]: value
       }
-    };
-    reader.readAsText(file);
+    });
   };
 
-  const clearCanvas = () => {
-    setElements([]);
-    setSelectedId(null);
-  };
-
-  // keyboard delete handler
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.key === "Delete" || e.key === "Backspace") && selectedId) {
-        removeElement(selectedId);
+  const handleTableChange = (tableType: keyof StatementCustomization['table'], value: boolean | string) => {
+    setCustomization({
+      ...customization,
+      table: {
+        ...customization.table,
+        [tableType]: value
       }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedId]);
+    });
+  };
+
+  const handleDecorationChange = (decorationType: keyof StatementCustomization['decorations'], value: boolean | string) => {
+    setCustomization({
+      ...customization,
+      decorations: {
+        ...customization.decorations,
+        [decorationType]: value
+      }
+    });
+  };
+
+  const getTemplateIcon = (templateId: string) => {
+    switch (templateId) {
+      case 'modern-bold':
+        return <Zap className="w-5 h-5" />;
+      case 'luxury-dark':
+        return <Crown className="w-5 h-5" />;
+      case 'compact-efficient':
+        return <Target className="w-5 h-5" />;
+      case 'elegant-script':
+        return <SparklesIcon className="w-5 h-5" />;
+      case 'industrial-bold':
+        return <Award className="w-5 h-5" />;
+      case 'zen-vertical':
+        return <Target className="w-5 h-5" />;
+      case 'academic-prestige':
+      case 'classic-formal':
+        return <GraduationCap className="w-5 h-5" />;
+      default:
+        return <FileText className="w-5 h-5" />;
+    }
+  };
 
   return (
-    <div className="flex gap-4">
-      {/* Sidebar */}
-      <aside className="w-72 bg-white p-4 rounded shadow-sm">
-        <h3 className="font-semibold mb-3">Elements</h3>
-        <div className="flex flex-col gap-2">
-          <button onClick={addText} className="btn">Add Text</button>
-          <label className="btn cursor-pointer">
-            Upload Image
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) addImageFromFile(f);
-                e.currentTarget.value = "";
-              }}
-            />
-          </label>
-          <button onClick={addTable} className="btn">Add Table</button>
-          <button onClick={() => {
-            // bring last added element to selected
-            const last = elements[elements.length - 1];
-            if (last) setSelectedId(last.id);
-          }} className="btn">Select Last</button>
-        </div>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Table className="w-5 h-5 text-primary" />
+            Statement Templates
+          </CardTitle>
+          <CardDescription>
+            Choose from our professionally designed statement templates and customize them to match your institution's branding.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="templates" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="templates" className="flex items-center gap-2">
+                <Layout className="w-4 h-4" />
+                Sample Templates
+              </TabsTrigger>
+              <TabsTrigger value="customize" className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Customize
+              </TabsTrigger>
+              <TabsTrigger value="preview" className="flex items-center gap-2">
+                <Eye className="w-4 h-4" />
+                Preview
+              </TabsTrigger>
+            </TabsList>
 
-        <hr className="my-4" />
-        <h3 className="font-semibold mb-2">Actions</h3>
-        <div className="flex flex-col gap-2">
-          <button onClick={exportToPNG} className="btn">Export PNG</button>
-          <button onClick={exportToPDF} className="btn">Export PDF</button>
-          <button onClick={saveTemplateJSON} className="btn">Download JSON</button>
-          <label className="btn cursor-pointer">Load JSON
-            <input type="file" accept="application/json" className="hidden" onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) loadTemplateJSON(f);
-              e.currentTarget.value = "";
-            }} />
-          </label>
-          <button onClick={clearCanvas} className="btn">Clear</button>
-        </div>
-
-        <hr className="my-4" />
-        <h3 className="font-semibold mb-2">Layers</h3>
-        <div className="space-y-1 max-h-40 overflow-auto">
-          {elements.map((el, idx) => (
-            <div key={el.id} className={`p-2 rounded flex items-center justify-between ${selectedId === el.id ? "bg-blue-50" : ""}`}>
-              <div className="text-sm truncate">
-                {el.type.toUpperCase()} • {el.id}
+            {/* Template Selection */}
+            <TabsContent value="templates" className="mt-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {defaultStatementTemplates.map((template) => (
+                  <Card 
+                    key={template.id}
+                    className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                      selectedTemplate?.id === template.id 
+                        ? 'ring-2 ring-primary border-primary' 
+                        : 'hover:border-primary/50'
+                    }`}
+                    onClick={() => handleTemplateSelect(template)}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {getTemplateIcon(template.id)}
+                          <CardTitle className="text-lg">{template.name}</CardTitle>
+                        </div>
+                        {selectedTemplate?.id === template.id && (
+                          <Check className="w-5 h-5 text-primary" />
+                        )}
+                      </div>
+                      <CardDescription className="text-sm">
+                        {template.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {/* Template Preview */}
+                        <div 
+                          className="h-40 rounded-lg border-2 border-dashed border-border flex items-center justify-center relative overflow-hidden"
+                          style={{ backgroundColor: template.style.backgroundColor }}
+                        >
+                          <div className="text-center p-4 relative z-10">
+                            <div 
+                              className="font-semibold mb-1" 
+                              style={{ 
+                                color: template.style.accentColor,
+                                fontSize: template.style.fontSize.subtitle,
+                                fontWeight: template.style.fontWeights.title
+                              }}
+                            >
+                              STATEMENT OF RESULT
+                            </div>
+                            <div 
+                              className="text-muted-foreground"
+                              style={{ fontSize: template.style.fontSize.body }}
+                            >
+                              {template.name} Style
+                            </div>
+                            {/* Mini table preview */}
+                            <div className="mt-2 space-y-1" style={{ fontSize: template.style.fontSize.table }}>
+                              <div className="h-1 bg-current opacity-30 rounded" style={{ backgroundColor: template.style.accentColor }}></div>
+                              <div className="h-1 bg-current opacity-20 rounded" style={{ backgroundColor: template.style.accentColor }}></div>
+                              <div className="h-1 bg-current opacity-20 rounded w-3/4" style={{ backgroundColor: template.style.accentColor }}></div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Template Features */}
+                        <div className="flex flex-wrap gap-1">
+                          <Badge variant="secondary" className="text-xs">
+                            {template.style.fontSize.title}
+                          </Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            {template.layout.tableLayout}
+                          </Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            {template.layout.orientation}
+                          </Badge>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-              <div className="flex gap-1">
-                <button onClick={() => bringForward(el.id)} title="Bring forward" className="text-xs">▲</button>
-                <button onClick={() => sendBackward(el.id)} title="Send backward" className="text-xs">▼</button>
-                <button onClick={() => setSelectedId(el.id)} title="Select" className="text-xs">●</button>
-                <button onClick={() => removeElement(el.id)} title="Delete" className="text-xs">✕</button>
-              </div>
-            </div>
-          ))}
-        </div>
+            </TabsContent>
 
-        {/* Inspector for selected element */}
-        <hr className="my-4" />
-        <h3 className="font-semibold mb-2">Inspector</h3>
-        {selectedId ? (
-          (() => {
-            const el = elements.find((e) => e.id === selectedId)!;
-            if (el.type === "text") {
-              const te = el as TextElement;
-              return (
-                <div className="space-y-2 text-sm">
-                  <label className="block">Text</label>
-                  <input className="w-full input" value={te.text} onChange={(e) => updateElement(te.id, { text: e.target.value })} />
-                  <label className="block">Font Size</label>
-                  <input type="number" className="w-full input" value={te.fontSize} onChange={(e) => updateElement(te.id, { fontSize: Number(e.target.value) })} />
-                  <label className="block">Color</label>
-                  <input type="color" className="w-full" value={te.fill} onChange={(e) => updateElement(te.id, { fill: e.target.value })} />
-                  <label className="block">Font Family</label>
-                  <input className="w-full input" value={te.fontFamily} onChange={(e) => updateElement(te.id, { fontFamily: e.target.value })} />
+            {/* Customization Panel */}
+            <TabsContent value="customize" className="mt-6">
+              {selectedTemplate ? (
+                <div className="space-y-6">
+                  {/* Colors */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Palette className="w-4 h-4" />
+                        Colors
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="primary-color">Primary Color</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              id="primary-color"
+                              type="color"
+                              value={customization.colors.primary}
+                              onChange={(e) => handleColorChange('primary', e.target.value)}
+                              className="w-16 h-10 p-1 border rounded"
+                            />
+                            <Input
+                              type="text"
+                              value={customization.colors.primary}
+                              onChange={(e) => handleColorChange('primary', e.target.value)}
+                              className="flex-1"
+                              placeholder="#1e40af"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="secondary-color">Secondary Color</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              id="secondary-color"
+                              type="color"
+                              value={customization.colors.secondary}
+                              onChange={(e) => handleColorChange('secondary', e.target.value)}
+                              className="w-16 h-10 p-1 border rounded"
+                            />
+                            <Input
+                              type="text"
+                              value={customization.colors.secondary}
+                              onChange={(e) => handleColorChange('secondary', e.target.value)}
+                              className="flex-1"
+                              placeholder="#fbbf24"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="table-header-color">Table Header Color</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              id="table-header-color"
+                              type="color"
+                              value={customization.colors.tableHeader}
+                              onChange={(e) => handleColorChange('tableHeader', e.target.value)}
+                              className="w-16 h-10 p-1 border rounded"
+                            />
+                            <Input
+                              type="text"
+                              value={customization.colors.tableHeader}
+                              onChange={(e) => handleColorChange('tableHeader', e.target.value)}
+                              className="flex-1"
+                              placeholder="#f3f4f6"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="background-color">Background Color</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              id="background-color"
+                              type="color"
+                              value={customization.colors.background}
+                              onChange={(e) => handleColorChange('background', e.target.value)}
+                              className="w-16 h-10 p-1 border rounded"
+                            />
+                            <Input
+                              type="text"
+                              value={customization.colors.background}
+                              onChange={(e) => handleColorChange('background', e.target.value)}
+                              className="flex-1"
+                              placeholder="#ffffff"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Typography */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Type className="w-4 h-4" />
+                        Typography
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label>Heading Font</Label>
+                          <Select
+                            value={customization.fonts.heading}
+                            onValueChange={(value) => handleFontChange('heading', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="serif">Serif (Times New Roman)</SelectItem>
+                              <SelectItem value="sans-serif">Sans Serif (Arial)</SelectItem>
+                              <SelectItem value="display">Display (Playfair)</SelectItem>
+                              <SelectItem value="mono">Monospace (Courier)</SelectItem>
+                              <SelectItem value="rounded">Rounded (Nunito)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Body Font</Label>
+                          <Select
+                            value={customization.fonts.body}
+                            onValueChange={(value) => handleFontChange('body', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="serif">Serif (Times New Roman)</SelectItem>
+                              <SelectItem value="sans-serif">Sans Serif (Arial)</SelectItem>
+                              <SelectItem value="display">Display (Playfair)</SelectItem>
+                              <SelectItem value="mono">Monospace (Courier)</SelectItem>
+                              <SelectItem value="rounded">Rounded (Nunito)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Table Font</Label>
+                          <Select
+                            value={customization.fonts.table}
+                            onValueChange={(value) => handleFontChange('table', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="serif">Serif (Times New Roman)</SelectItem>
+                              <SelectItem value="sans-serif">Sans Serif (Arial)</SelectItem>
+                              <SelectItem value="mono">Monospace (Courier)</SelectItem>
+                              <SelectItem value="rounded">Rounded (Nunito)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Table Settings */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Table className="w-4 h-4" />
+                        Table Settings
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="show-borders">Show Table Borders</Label>
+                            <Switch
+                              id="show-borders"
+                              checked={customization.table.showBorders}
+                              onCheckedChange={(checked) => handleTableChange('showBorders', checked)}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="alternate-rows">Alternate Row Colors</Label>
+                            <Switch
+                              id="alternate-rows"
+                              checked={customization.table.alternateRows}
+                              onCheckedChange={(checked) => handleTableChange('alternateRows', checked)}
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label>Header Style</Label>
+                            <Select
+                              value={customization.table.headerStyle}
+                              onValueChange={(value) => handleTableChange('headerStyle', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="bold">Bold Text</SelectItem>
+                                <SelectItem value="colored">Colored Background</SelectItem>
+                                <SelectItem value="minimal">Minimal Style</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Border Width</Label>
+                            <Select
+                              value={customization.table.borderWidth}
+                              onValueChange={(value) => handleTableChange('borderWidth', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="thin">Thin (1px)</SelectItem>
+                                <SelectItem value="medium">Medium (2px)</SelectItem>
+                                <SelectItem value="thick">Thick (3px)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Decorations */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Settings className="w-4 h-4" />
+                        Decorations
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="show-border">Show Document Border</Label>
+                            <Switch
+                              id="show-border"
+                              checked={customization.decorations.showBorder}
+                              onCheckedChange={(checked) => handleDecorationChange('showBorder', checked)}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="show-watermark">Show Watermark</Label>
+                            <Switch
+                              id="show-watermark"
+                              checked={customization.decorations.showWatermark}
+                              onCheckedChange={(checked) => handleDecorationChange('showWatermark', checked)}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="show-decorations">Show Decorative Elements</Label>
+                            <Switch
+                              id="show-decorations"
+                              checked={customization.decorations.showDecorations}
+                              onCheckedChange={(checked) => handleDecorationChange('showDecorations', checked)}
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label>Border Width</Label>
+                            <Select
+                              value={customization.decorations.borderWidth}
+                              onValueChange={(value) => handleDecorationChange('borderWidth', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="thin">Thin (1px)</SelectItem>
+                                <SelectItem value="medium">Medium (2px)</SelectItem>
+                                <SelectItem value="thick">Thick (4px)</SelectItem>
+                                <SelectItem value="extra-thick">Extra Thick (6px)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              );
-            }
-            if (el.type === "image") {
-              const ie = el as ImageElement;
-              return (
-                <div className="space-y-2 text-sm">
-                  <label className="block">Source</label>
-                  <div className="break-all text-xs">{ie.src?.slice?.(0, 60)}</div>
-                  <label className="block">Width</label>
-                  <input type="number" className="w-full input" value={ie.width} onChange={(e) => updateElement(ie.id, { width: Number(e.target.value) })} />
-                  <label className="block">Height</label>
-                  <input type="number" className="w-full input" value={ie.height} onChange={(e) => updateElement(ie.id, { height: Number(e.target.value) })} />
+              ) : (
+                <div className="text-center py-12">
+                  <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Select a Template First</h3>
+                  <p className="text-muted-foreground">
+                    Choose a template from the Sample Templates tab to start customizing.
+                  </p>
                 </div>
-              );
-            }
-            // table inspector
-            if (el.type === "table") {
-              const te = el as TableElement;
-              return (
-                <div className="space-y-2 text-sm">
-                  <label className="block">Columns</label>
-                  <input className="w-full input" value={te.columns.join(", ")} onChange={(e) => updateElement(te.id, { columns: e.target.value.split(",").map(s => s.trim()) })} />
-                  <label className="block">Rows (comma-separated cells, new line = new row)</label>
-                  <textarea className="w-full input" rows={4} value={te.rows.map(r => r.join(",")).join("\n")} onChange={(e) => updateElement(te.id, { rows: e.target.value.split('\n').map(line => line.split(',').map(c => c.trim())) })} />
+              )}
+            </TabsContent>
+
+            {/* Preview */}
+            <TabsContent value="preview" className="mt-6">
+              {selectedTemplate ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">Template Preview</h3>
+                    <Badge variant="outline">{selectedTemplate.name}</Badge>
+                  </div>
+                  <div className="border rounded-lg p-8 bg-muted/20">
+                    <div 
+                      className="max-w-4xl mx-auto p-8 rounded-lg shadow-lg"
+                      style={{ 
+                        backgroundColor: customization.colors.background,
+                        fontFamily: customization.fonts.body,
+                        fontSize: '14px',
+                        border: customization.decorations.showBorder 
+                          ? `${customization.decorations.borderWidth === 'thin' ? '1px' : 
+                              customization.decorations.borderWidth === 'medium' ? '2px' :
+                              customization.decorations.borderWidth === 'thick' ? '4px' : '6px'} solid ${customization.colors.primary}`
+                          : 'none'
+                      }}
+                    >
+                      <div className="text-center space-y-4">
+                        <h1 
+                          className="font-bold"
+                          style={{ 
+                            color: customization.colors.primary,
+                            fontFamily: customization.fonts.heading,
+                            fontSize: '28px'
+                          }}
+                        >
+                          STATEMENT OF RESULT
+                        </h1>
+                        <div 
+                          style={{ 
+                            color: customization.colors.secondary,
+                            fontSize: '16px'
+                          }}
+                        >
+                          Academic Performance Report
+                        </div>
+                        
+                        {/* Sample Table */}
+                        <div className="mt-8">
+                          <table 
+                            className="w-full"
+                            style={{ 
+                              fontFamily: customization.fonts.table,
+                              fontSize: '12px',
+                              border: customization.table.showBorders ? `${customization.table.borderWidth === 'thin' ? '1px' : customization.table.borderWidth === 'medium' ? '2px' : '3px'} solid ${customization.colors.tableBorder}` : 'none'
+                            }}
+                          >
+                            <thead>
+                              <tr 
+                                style={{ 
+                                  backgroundColor: customization.table.headerStyle === 'colored' ? customization.colors.tableHeader : 'transparent',
+                                  fontWeight: customization.table.headerStyle === 'bold' ? 'bold' : 'normal'
+                                }}
+                              >
+                                <th className="p-3 text-left" style={{ color: customization.colors.text }}>Subject</th>
+                                <th className="p-3 text-center" style={{ color: customization.colors.text }}>Score</th>
+                                <th className="p-3 text-center" style={{ color: customization.colors.text }}>Grade</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {['Mathematics', 'English', 'Science'].map((subject, index) => (
+                                <tr 
+                                  key={subject}
+                                  style={{ 
+                                    backgroundColor: customization.table.alternateRows && index % 2 === 1 
+                                      ? `${customization.colors.tableHeader}50` 
+                                      : 'transparent'
+                                  }}
+                                >
+                                  <td className="p-3" style={{ color: customization.colors.text }}>{subject}</td>
+                                  <td className="p-3 text-center" style={{ color: customization.colors.text }}>85%</td>
+                                  <td className="p-3 text-center" style={{ color: customization.colors.accent }}>A</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              );
-            }
-            return null;
-          })()
-        ) : (
-          <div className="text-sm text-muted-foreground">Select an element to edit</div>
-        )}
-      </aside>
-
-      {/* Canvas */}
-      <div className="flex-1 bg-gray-50 p-4 rounded">
-        <div className="mb-2 flex items-center gap-3">
-          <div className="text-sm">Canvas size:</div>
-          <input type="number" value={stageSize.width} onChange={(e) => setStageSize(s => ({ ...s, width: Number(e.target.value) }))} className="w-24 input" />
-          <input type="number" value={stageSize.height} onChange={(e) => setStageSize(s => ({ ...s, height: Number(e.target.value) }))} className="w-24 input" />
-        </div>
-
-        <div className="bg-white p-3 rounded shadow" style={{ width: stageSize.width + 16 }}>
-          <Stage width={stageSize.width} height={stageSize.height} ref={stageRef} style={{ background: "white" }}>
-            <Layer ref={layerRef}>
-              {/* background rectangle (document) */}
-              <Rect x={0} y={0} width={stageSize.width} height={stageSize.height} fill="#fff" stroke="#e5e7eb" strokeWidth={1} />
-
-              {elements.map((el) => {
-                if (el.type === "text") {
-                  const te = el as TextElement;
-                  return (
-                    <Group key={te.id} x={te.x} y={te.y} draggable onClick={() => setSelectedId(te.id)} onDragEnd={(e) => updateElement(te.id, { x: e.target.x(), y: e.target.y() })}>
-                      <Text text={te.text} fontSize={te.fontSize} fontFamily={te.fontFamily} fill={te.fill} width={te.width} />
-                    </Group>
-                  );
-                }
-                if (el.type === "image") {
-                  const ie = el as ImageElement;
-                  return (
-                    <Group key={ie.id} x={ie.x} y={ie.y}>
-                      <URLImage element={ie} isSelected={selectedId === ie.id} onClick={() => setSelectedId(ie.id)} onTransform={(patch) => updateElement(ie.id, patch)} />
-                    </Group>
-                  );
-                }
-                if (el.type === "table") {
-                  const te = el as TableElement;
-                  // simple table render: header row + rows
-                  const cellWidth = 140;
-                  const cellHeight = 28;
-                  return (
-                    <Group key={te.id} x={te.x} y={te.y} draggable onClick={() => setSelectedId(te.id)} onDragEnd={(e) => updateElement(te.id, { x: e.target.x(), y: e.target.y() })}>
-                      {/* header */}
-                      {te.columns.map((col, ci) => (
-                        <Group key={`h_${ci}`} x={ci * cellWidth} y={0}>
-                          <Rect width={cellWidth} height={cellHeight} fill={te.headerFill} stroke="#e5e7eb" />
-                          <Text text={col} fontSize={12} fontFamily="Arial" x={6} y={6} fill={te.textColor} />
-                        </Group>
-                      ))}
-                      {/* rows */}
-                      {te.rows.map((row, ri) => (
-                        <Group key={`r_${ri}`} x={0} y={(ri + 1) * cellHeight}>
-                          {row.map((cell, ci) => (
-                            <Group key={`r_${ri}_${ci}`} x={ci * cellWidth} y={0}>
-                              <Rect width={cellWidth} height={cellHeight} fill={ri % 2 === 0 ? te.rowFill : "#f9fafb"} stroke="#e5e7eb" />
-                              <Text text={cell} fontSize={12} fontFamily="Arial" x={6} y={6} fill={te.textColor} />
-                            </Group>
-                          ))}
-                        </Group>
-                      ))}
-                    </Group>
-                  );
-                }
-                return null;
-              })}
-            </Layer>
-          </Stage>
-        </div>
-      </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Eye className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No Template Selected</h3>
+                  <p className="text-muted-foreground">
+                    Select a template to see the preview.
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };
-
-export default TemplateBuilder;

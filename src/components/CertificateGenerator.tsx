@@ -208,11 +208,13 @@ export const CertificateGenerator = () => {
           {/* Document Type Tabs */}
           <div className="mb-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="statement" className="flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Statement of Result
-                </TabsTrigger>
+              <TabsList className={`grid w-full ${schoolInfo?.type === 'Institution' ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                {schoolInfo?.type === 'School' && (
+                  <TabsTrigger value="statement" className="flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Statement of Result
+                  </TabsTrigger>
+                )}
                 <TabsTrigger value="certificate" className="flex items-center gap-2">
                   <Medal className="w-4 h-4" />
                   Certificate
@@ -325,7 +327,8 @@ export const CertificateGenerator = () => {
               schoolContact=""
               schoolLogo={schoolInfo?.logo}
               subjects={subjects}
-              dateIssued={new Date().toLocaleDateString()}
+              dateIssued={schoolInfo?.type === 'Institution' ? schoolInfo?.dateOfIssuance || new Date().toLocaleDateString() : new Date().toLocaleDateString()}
+              resultRemark={schoolInfo?.resultRemark}
               signatories={schoolInfo?.signatories?.statementOfResult}
               template={selectedStatementTemplate}
               customization={statementCustomization}
@@ -345,7 +348,8 @@ export const CertificateGenerator = () => {
               schoolContact=""
               schoolLogo={schoolInfo?.logo}
               subjects={subjects}
-              dateIssued={new Date().toLocaleDateString()}
+              dateIssued={schoolInfo?.type === 'Institution' ? schoolInfo?.dateOfIssuance || new Date().toLocaleDateString() : new Date().toLocaleDateString()}
+              resultRemark={schoolInfo?.resultRemark}
               signatories={schoolInfo?.signatories?.statementOfResult}
             />
           )
@@ -363,7 +367,8 @@ export const CertificateGenerator = () => {
             schoolLogo={schoolInfo?.logo}
             averageScore={averageScore}
             overallGrade={getGradeFromAverage(averageScore)}
-            dateIssued={new Date().toLocaleDateString()}
+            dateIssued={schoolInfo?.type === 'Institution' ? schoolInfo?.dateOfIssuance || new Date().toLocaleDateString() : new Date().toLocaleDateString()}
+            resultRemark={schoolInfo?.resultRemark}
             signatories={schoolInfo?.signatories?.certificate}
           />
         ) : selectedTemplate ? (
@@ -380,7 +385,8 @@ export const CertificateGenerator = () => {
             schoolLogo={schoolInfo?.logo}
             averageScore={averageScore}
             overallGrade={getGradeFromAverage(averageScore)}
-            dateIssued={new Date().toLocaleDateString()}
+            dateIssued={schoolInfo?.type === 'Institution' ? schoolInfo?.dateOfIssuance || new Date().toLocaleDateString() : new Date().toLocaleDateString()}
+            resultRemark={schoolInfo?.resultRemark}
             signatories={schoolInfo?.signatories?.certificate}
             template={selectedTemplate}
             customization={customization}

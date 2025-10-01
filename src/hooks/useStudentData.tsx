@@ -22,6 +22,7 @@ export interface SchoolInfo {
   term?: string;
   dateOfIssuance?: string;
   logo?: string;
+  resultRemark?: string;
   signatories?: {
     statementOfResult?: {
       signatoryType?: 'Class Teacher' | 'Head Teacher' | 'Both';

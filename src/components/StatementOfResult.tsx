@@ -19,9 +19,10 @@ interface StatementOfResultProps {
     grade: string;
   }>;
   dateIssued: string;
+  resultRemark?: string;
   signatories?: {
     classTeacher?: string;
-    instructor?: string;
+    headTeacher?: string;
   };
 }
 
@@ -40,6 +41,7 @@ export const StatementOfResult = ({
   schoolLogo,
   subjects,
   dateIssued,
+  resultRemark,
   signatories
 }: StatementOfResultProps) => {
   const totalMarks = subjects.reduce((sum, subject) => sum + subject.score, 0);
@@ -177,18 +179,40 @@ export const StatementOfResult = ({
         </div>
       </div>
 
+      {/* Result Remark */}
+      {resultRemark && (
+        <div className="bg-accent/10 p-4 rounded-lg border border-accent/20 mb-8">
+          <p className="text-foreground text-center">
+            <strong>Remark:</strong> {resultRemark}
+          </p>
+        </div>
+      )}
+
       {/* Footer */}
-      {(signatories?.classTeacher || signatories?.instructor) && (
-        <div className="flex justify-center pt-6 border-t-2 border-secondary">
-          <div className="text-center max-w-sm">
-            <div className="h-16 border-b border-muted-foreground mb-2"></div>
-            <p className="font-semibold text-foreground">
-              {signatories?.classTeacher || signatories?.instructor}
-            </p>
-            <p className="text-muted-foreground text-sm">
-              {signatories?.classTeacher ? "Class Teacher" : "Instructor"} - Signature & Date
-            </p>
-          </div>
+      {(signatories?.classTeacher || signatories?.headTeacher) && (
+        <div className="flex justify-center gap-8 pt-6 border-t-2 border-secondary">
+          {signatories?.classTeacher && (
+            <div className="text-center max-w-sm">
+              <div className="h-16 border-b border-muted-foreground mb-2"></div>
+              <p className="font-semibold text-foreground">
+                {signatories.classTeacher}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                Class Teacher - Signature & Date
+              </p>
+            </div>
+          )}
+          {signatories?.headTeacher && (
+            <div className="text-center max-w-sm">
+              <div className="h-16 border-b border-muted-foreground mb-2"></div>
+              <p className="font-semibold text-foreground">
+                {signatories.headTeacher}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                Head Teacher - Signature & Date
+              </p>
+            </div>
+          )}
         </div>
       )}
 

@@ -239,6 +239,19 @@ export const SchoolInfoForm = () => {
                 </div>
               )}
 
+              {/* Result Remark */}
+              <div className="space-y-2">
+                <Label htmlFor="result-remark">Result Remark</Label>
+                <Textarea
+                  id="result-remark"
+                  placeholder="Enter result remark or achievements (e.g., 'Excellent performance', 'Outstanding achievement', etc.)"
+                  value={schoolInfo?.resultRemark || ""}
+                  onChange={(e) => handleSchoolInfoChange('resultRemark', e.target.value)}
+                  className="w-full resize-none"
+                  rows={3}
+                />
+              </div>
+
               {/* Logo Upload */}
               <div className="space-y-2">
                 <Label>Logo</Label>

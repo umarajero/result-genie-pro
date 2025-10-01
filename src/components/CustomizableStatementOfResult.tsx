@@ -20,9 +20,10 @@ interface CustomizableStatementOfResultProps {
     grade: string;
   }>;
   dateIssued: string;
+  resultRemark?: string;
   signatories?: {
     classTeacher?: string;
-    instructor?: string;
+    headTeacher?: string;
   };
   template: StatementTemplate;
   customization: StatementCustomization;
@@ -43,6 +44,7 @@ export const CustomizableStatementOfResult = ({
   schoolLogo,
   subjects,
   dateIssued,
+  resultRemark,
   signatories,
   template,
   customization
@@ -493,24 +495,53 @@ export const CustomizableStatementOfResult = ({
         </div>
       </div>
 
-      {/* Footer */}
-      {(signatories?.classTeacher || signatories?.instructor) && (
+      {/* Result Remark */}
+      {resultRemark && (
         <div 
-          className="flex justify-center pt-6 border-t-2 relative z-10" 
+          className="p-4 rounded-lg border mb-8 relative z-10" 
+          style={{ 
+            backgroundColor: `${customization.colors.accent}10`,
+            borderColor: `${customization.colors.accent}20`,
+            marginBottom: template.style.spacing.sectionGaps
+          }}
+        >
+          <p style={{ ...bodyStyle, textAlign: 'center' }}>
+            <strong>Remark:</strong> {resultRemark}
+          </p>
+        </div>
+      )}
+
+      {/* Footer */}
+      {(signatories?.classTeacher || signatories?.headTeacher) && (
+        <div 
+          className="flex justify-center gap-8 pt-6 border-t-2 relative z-10" 
           style={{ 
             borderColor: customization.colors.secondary,
             marginTop: template.style.spacing.sectionGaps
           }}
         >
-          <div className="text-center max-w-sm">
-            <div className="h-16 border-b mb-2" style={{ borderColor: customization.colors.text }}></div>
-            <p style={signatureStyle}>
-              {signatories?.classTeacher || signatories?.instructor}
-            </p>
-            <p style={{ ...bodyStyle, fontSize: template.style.fontSize.signature }}>
-              {signatories?.classTeacher ? "Class Teacher" : "Instructor"} - Signature & Date
-            </p>
-          </div>
+          {signatories?.classTeacher && (
+            <div className="text-center max-w-sm">
+              <div className="h-16 border-b mb-2" style={{ borderColor: customization.colors.text }}></div>
+              <p style={signatureStyle}>
+                {signatories.classTeacher}
+              </p>
+              <p style={{ ...bodyStyle, fontSize: template.style.fontSize.signature }}>
+                Class Teacher - Signature & Date
+              </p>
+            </div>
+          )}
+          {signatories?.headTeacher && (
+            <div className="text-center max-w-sm">
+              <div className="h-16 border-b mb-2" style={{ borderColor: customization.colors.text }}></div>
+              <p style={signatureStyle}>
+                {signatories.headTeacher}
+              </p>
+              <p style={{ ...bodyStyle, fontSize: template.style.fontSize.signature }}>
+                Head Teacher - Signature & Date
+              </p>
+            </div>
+          )}
         </div>
       )}
 

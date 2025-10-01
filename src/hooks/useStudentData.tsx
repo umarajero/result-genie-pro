@@ -16,18 +16,24 @@ export interface StudentRecord {
 
 export interface SchoolInfo {
   name: string;
+  type?: 'School' | 'Institution';
   address?: string;
   session?: string;
   term?: string;
+  dateOfIssuance?: string;
   logo?: string;
   signatories?: {
     statementOfResult?: {
+      signatoryType?: 'Class Teacher' | 'Head Teacher' | 'Both';
       classTeacher?: string;
-      instructor?: string;
+      headTeacher?: string;
     };
     certificate?: {
+      signatoryType?: 'Class Teacher' | 'Head Teacher' | 'Both' | 'Instructor Name' | 'Head of Institution Name';
       classTeacher?: string;
+      headTeacher?: string;
       instructor?: string;
+      headOfInstitution?: string;
     };
   };
 }
@@ -49,18 +55,24 @@ export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>({
     name: "",
+    type: "School",
     address: "",
     session: new Date().getFullYear().toString(),
     term: "",
+    dateOfIssuance: "",
     logo: "/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png",
     signatories: {
       statementOfResult: {
+        signatoryType: undefined,
         classTeacher: "",
-        instructor: ""
+        headTeacher: ""
       },
       certificate: {
+        signatoryType: undefined,
         classTeacher: "",
-        instructor: ""
+        headTeacher: "",
+        instructor: "",
+        headOfInstitution: ""
       }
     }
   });

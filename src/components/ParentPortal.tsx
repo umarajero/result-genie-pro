@@ -293,7 +293,7 @@ export const ParentPortal = () => {
                 totalStudents={students.length}
                 schoolName={schoolInfo?.name || ""}
                 schoolAddress={schoolInfo?.address || ""}
-                schoolContact=""
+                schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
                 schoolLogo={schoolInfo?.logo}
                 averageScore={selectedStudent.averageScore || 0}
                 overallGrade={selectedStudent.grade || "F"}

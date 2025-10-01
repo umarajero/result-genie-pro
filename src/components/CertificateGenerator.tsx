@@ -359,7 +359,7 @@ export const CertificateGenerator = () => {
             totalStudents={students.length}
             schoolName={schoolInfo?.name || ""}
             schoolAddress={schoolInfo?.address || ""}
-            schoolContact=""
+            schoolContact={schoolInfo?.principalName ? `Principal: ${schoolInfo.principalName}` : ""}
             schoolLogo={schoolInfo?.logo}
             averageScore={averageScore}
             overallGrade={getGradeFromAverage(averageScore)}

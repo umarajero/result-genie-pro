@@ -20,14 +20,20 @@ export interface SchoolInfo {
   session?: string;
   term?: string;
   logo?: string;
+  institutionType?: 'school' | 'institution';
+  dateOfIssuance?: string;
   signatories?: {
     statementOfResult?: {
       classTeacher?: string;
       instructor?: string;
+      headTeacher?: string;
+      headOfInstitution?: string;
     };
     certificate?: {
       classTeacher?: string;
       instructor?: string;
+      headTeacher?: string;
+      headOfInstitution?: string;
     };
   };
 }
@@ -53,14 +59,19 @@ export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
     session: new Date().getFullYear().toString(),
     term: "",
     logo: "/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png",
+    institutionType: 'school',
     signatories: {
       statementOfResult: {
         classTeacher: "",
-        instructor: ""
+        instructor: "",
+        headTeacher: "",
+        headOfInstitution: ""
       },
       certificate: {
         classTeacher: "",
-        instructor: ""
+        instructor: "",
+        headTeacher: "",
+        headOfInstitution: ""
       }
     }
   });

@@ -11,7 +11,6 @@ const demoSteps = [
     title: "Welcome to ResultGenie",
     description: "Transform your school's result management with automated certificate generation, parent portals, and professional result statements.",
     icon: <Award className="w-8 h-8 text-primary" />,
-    content: "Graderly simplifies the entire process of managing student results, from data import to certificate generation.",
     content: "ResultGenie simplifies the entire process of managing student results, from data import to certificate generation.",
     avatar: { fallback: "AD", role: "Administrator" }
   },

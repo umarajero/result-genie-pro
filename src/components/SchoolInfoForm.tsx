@@ -75,7 +75,6 @@ export const SchoolInfoForm = () => {
       address: schoolInfo?.address || "",
       session: schoolInfo?.session || new Date().getFullYear().toString(),
       term: schoolInfo?.term || "First",
-      principalName: schoolInfo?.principalName || "",
       logo: logoSrc,
       signatories: schoolInfo?.signatories || {
         statementOfResult: { classTeacher: "", instructor: "" },

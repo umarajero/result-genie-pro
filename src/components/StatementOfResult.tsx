@@ -83,14 +83,18 @@ export const StatementOfResult = ({
             </div>
           )}
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-primary mb-2">{schoolName}</h1>
+            <h1 className="text-4xl font-bold text-primary mb-2">{schoolName || "—"}</h1>
             {schoolAddress && <p className="text-muted-foreground text-lg">{schoolAddress}</p>}
             {schoolContact && <p className="text-muted-foreground">{schoolContact}</p>}
           </div>
         </div>
         <div className="bg-gradient-subtle p-4 rounded-lg">
           <h2 className="text-2xl font-bold text-foreground mb-2">STATEMENT OF RESULT</h2>
-          <p className="text-primary font-medium">{session} Academic Session - {term} Term</p>
+          <p className="text-primary font-medium">
+            {session && `${session} Academic Session`}
+            {session && term && " - "}
+            {term && `${term}`}
+          </p>
         </div>
       </div>
 
@@ -101,10 +105,12 @@ export const StatementOfResult = ({
             <span className="font-semibold text-foreground min-w-[120px]">Student Name:</span>
             <span className="text-primary font-bold text-lg">{studentName}</span>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-foreground min-w-[120px]">Class:</span>
-            <span className="text-foreground">{className}</span>
-          </div>
+          {className && (
+            <div className="flex items-center gap-3">
+              <span className="font-semibold text-foreground min-w-[120px]">Class:</span>
+              <span className="text-foreground">{className}</span>
+            </div>
+          )}
         </div>
         <div className="space-y-3">
           {regNumber && (
@@ -113,15 +119,19 @@ export const StatementOfResult = ({
               <span className="text-foreground">{regNumber}</span>
             </div>
           )}
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-foreground min-w-[120px]">Position:</span>
-            <span className="text-accent font-bold">{position} out of {totalStudents}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Calendar className="w-4 h-4 text-primary" />
-            <span className="font-semibold text-foreground min-w-[100px]">Date Issued:</span>
-            <span className="text-foreground">{dateIssued}</span>
-          </div>
+          {position && (
+            <div className="flex items-center gap-3">
+              <span className="font-semibold text-foreground min-w-[120px]">Position:</span>
+              <span className="text-accent font-bold">{position} out of {totalStudents}</span>
+            </div>
+          )}
+          {dateIssued && (
+            <div className="flex items-center gap-3">
+              <Calendar className="w-4 h-4 text-primary" />
+              <span className="font-semibold text-foreground min-w-[100px]">Date Issued:</span>
+              <span className="text-foreground">{dateIssued}</span>
+            </div>
+          )}
         </div>
       </div>
 

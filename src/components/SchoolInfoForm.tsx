@@ -69,18 +69,14 @@ export const SchoolInfoForm = () => {
 
   const updateSchoolInfoLogo = (logoSrc: string) => {
     setSchoolInfo({
-      ...schoolInfo,
-      name: schoolInfo?.name || "",
-      type: schoolInfo?.type || "School",
+      ...(schoolInfo || {}),
       logo: logoSrc,
     });
   };
 
   const handleSchoolInfoChange = (field: string, value: string) => {
     setSchoolInfo({
-      ...schoolInfo,
-      name: schoolInfo?.name || "",
-      type: schoolInfo?.type || "School",
+      ...(schoolInfo || {}),
       [field]: value
     });
   };
@@ -92,9 +88,7 @@ export const SchoolInfoForm = () => {
     const isInstitution = schoolInfo?.type === 'Institution';
     
     setSchoolInfo({
-      ...schoolInfo,
-      name: schoolInfo?.name || "",
-      type: schoolInfo?.type || "School",
+      ...(schoolInfo || {}),
       signatories: {
         ...schoolInfo?.signatories,
         [documentType]: {
@@ -114,9 +108,7 @@ export const SchoolInfoForm = () => {
     value: string
   ) => {
     setSchoolInfo({
-      ...schoolInfo,
-      name: schoolInfo?.name || "",
-      type: schoolInfo?.type || "School",
+      ...(schoolInfo || {}),
       signatories: {
         ...schoolInfo?.signatories,
         [documentType]: {

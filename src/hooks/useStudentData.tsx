@@ -15,7 +15,7 @@ export interface StudentRecord {
 }
 
 export interface SchoolInfo {
-  name: string;
+  name?: string;
   type?: 'School' | 'Institution';
   address?: string;
   session?: string;
@@ -45,7 +45,7 @@ interface StudentDataContextType {
   uploadedFileName: string | null;
   setUploadedFileName: (fileName: string | null) => void;
   schoolInfo: SchoolInfo | null;
-  setSchoolInfo: (schoolInfo: SchoolInfo | null) => void;
+  setSchoolInfo: (schoolInfo: SchoolInfo | null | ((prev: SchoolInfo | null) => SchoolInfo | null)) => void;
   clearData: () => void;
 }
 
@@ -54,29 +54,7 @@ const StudentDataContext = createContext<StudentDataContextType | undefined>(und
 export const StudentDataProvider = ({ children }: { children: ReactNode }) => {
   const [students, setStudents] = useState<StudentRecord[]>([]);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>({
-    name: "",
-    type: "School",
-    address: "",
-    session: new Date().getFullYear().toString(),
-    term: "",
-    dateOfIssuance: "",
-    logo: "/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png",
-    signatories: {
-      statementOfResult: {
-        signatoryType: undefined,
-        classTeacher: "",
-        headTeacher: ""
-      },
-      certificate: {
-        signatoryType: undefined,
-        classTeacher: "",
-        headTeacher: "",
-        instructor: "",
-        headOfInstitution: ""
-      }
-    }
-  });
+  const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
 
   const clearData = () => {
     setStudents([]);

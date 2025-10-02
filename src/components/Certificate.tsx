@@ -67,14 +67,18 @@ export const Certificate = ({
             </div>
           )}
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-primary mb-2">{schoolName}</h1>
+            <h1 className="text-4xl font-bold text-primary mb-2">{schoolName || "—"}</h1>
             {schoolAddress && <p className="text-muted-foreground text-lg">{schoolAddress}</p>}
             {schoolContact && <p className="text-muted-foreground">{schoolContact}</p>}
           </div>
         </div>
         <div className="bg-gradient-subtle p-4 rounded-lg">
           <h2 className="text-2xl font-bold text-foreground mb-2">CERTIFICATE OF ACHIEVEMENT</h2>
-          <p className="text-primary font-medium">{session} Academic Session - {term} Term</p>
+          <p className="text-primary font-medium">
+            {session && `${session} Academic Session`}
+            {session && term && " - "}
+            {term && `${term}`}
+          </p>
         </div>
       </div>
 
@@ -96,8 +100,7 @@ export const Certificate = ({
           </div>
 
           <p className="text-lg text-foreground max-w-2xl mx-auto leading-relaxed">
-            has successfully completed the <strong>{term}</strong> term of the <strong>{session}</strong> academic session 
-            with distinction and outstanding performance.
+            has successfully completed {term && `the ${term}`}{term && session && " of the "}{session && `${session} academic session`} with distinction and outstanding performance.
           </p>
 
           {/* Achievement details */}
@@ -125,9 +128,11 @@ export const Certificate = ({
             </div>
           </div>
 
-          <p className="text-base text-muted-foreground">
-            Awarded on this <strong>{dateIssued}</strong> in recognition of academic excellence and dedication to learning.
-          </p>
+          {dateIssued && (
+            <p className="text-base text-muted-foreground">
+              Awarded on this <strong>{dateIssued}</strong> in recognition of academic excellence and dedication to learning.
+            </p>
+          )}
 
           {/* Result Remark */}
           {resultRemark && (

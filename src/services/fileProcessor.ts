@@ -10,7 +10,7 @@ const calculateGrade = (average: number): string => {
   return 'F';
 };
 
-export const processExcelFile = (file: File): Promise<{ students: StudentRecord[], schoolInfo: SchoolInfo | null }> => {
+export const processExcelFile = (file: File): Promise<{ students: StudentRecord[], schoolInfo: Partial<SchoolInfo> }> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
@@ -34,7 +34,7 @@ export const processExcelFile = (file: File): Promise<{ students: StudentRecord[
   });
 };
 
-export const processCsvFile = (file: File): Promise<{ students: StudentRecord[], schoolInfo: SchoolInfo | null }> => {
+export const processCsvFile = (file: File): Promise<{ students: StudentRecord[], schoolInfo: Partial<SchoolInfo> }> => {
   return new Promise((resolve, reject) => {
     Papa.parse(file, {
       complete: (results) => {
@@ -50,15 +50,15 @@ export const processCsvFile = (file: File): Promise<{ students: StudentRecord[],
   });
 };
 
-const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo: SchoolInfo | null } => {
+const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo: Partial<SchoolInfo> } => {
   if (data.length < 2) {
     throw new Error('File must contain at least a header row and one data row');
   }
   
   console.log('Starting file analysis...');
   
-  // Extract school information from the first few rows
-  let schoolInfo: SchoolInfo = { name: '' };
+  // Extract school information from the first few rows (only extract data found in file)
+  let schoolInfo: Partial<SchoolInfo> = {};
   let headerRowIndex = 0;
   
   // Look for school information in the first 8 rows

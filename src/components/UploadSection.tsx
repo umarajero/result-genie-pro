@@ -74,7 +74,11 @@ export const UploadSection = () => {
         });
         
         setStudents(result.students);
-        setSchoolInfo(result.schoolInfo);
+        // Merge file data with existing school info instead of replacing
+        setSchoolInfo(prev => ({
+          ...prev,
+          ...result.schoolInfo
+        }));
         setUploadedFileName(file.name);
         setUploadStatus('success');
         

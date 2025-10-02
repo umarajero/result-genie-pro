@@ -6,20 +6,20 @@ interface CustomizableStatementOfResultProps {
   className: string;
   serialNumber?: string;
   regNumber?: string;
-  session: string;
-  term: string;
+  session?: string;
+  term?: string;
   position: string;
   totalStudents: number;
-  schoolName: string;
-  schoolAddress: string;
-  schoolContact: string;
+  schoolName?: string;
+  schoolAddress?: string;
+  schoolContact?: string;
   schoolLogo?: string;
   subjects: Array<{
     name: string;
     score: number;
     grade: string;
   }>;
-  dateIssued: string;
+  dateIssued?: string;
   resultRemark?: string;
   signatories?: {
     classTeacher?: string;
@@ -271,12 +271,12 @@ export const CustomizableStatementOfResult = ({
         {template.layout.headerLayout === 'split' ? (
           <div className="flex justify-between items-center">
             <div>
-              <h1 style={titleStyle}>{schoolName}</h1>
+              <h1 style={titleStyle}>{schoolName || "—"}</h1>
               {schoolAddress && <p style={bodyStyle}>{schoolAddress}</p>}
             </div>
             {schoolLogo && (
               <div className="w-20 h-20 flex items-center justify-center bg-muted rounded-full overflow-hidden border-2" style={{ borderColor: customization.colors.primary }}>
-                <img src={schoolLogo} alt={`${schoolName} Logo`} className="w-full h-full object-contain" />
+                <img src={schoolLogo} alt={`${schoolName || "School"} Logo`} className="w-full h-full object-contain" />
               </div>
             )}
           </div>
@@ -285,11 +285,11 @@ export const CustomizableStatementOfResult = ({
             {schoolLogo && template.layout.logoPosition === 'top' && (
               <div className="flex justify-center mb-4">
                 <div className="w-20 h-20 flex items-center justify-center bg-muted rounded-full overflow-hidden border-2" style={{ borderColor: customization.colors.primary }}>
-                  <img src={schoolLogo} alt={`${schoolName} Logo`} className="w-full h-full object-contain" />
+                  <img src={schoolLogo} alt={`${schoolName || "School"} Logo`} className="w-full h-full object-contain" />
                 </div>
               </div>
             )}
-            <h1 style={titleStyle}>{schoolName}</h1>
+            <h1 style={titleStyle}>{schoolName || "—"}</h1>
             {schoolAddress && <p style={bodyStyle}>{schoolAddress}</p>}
           </div>
         )}
@@ -298,7 +298,13 @@ export const CustomizableStatementOfResult = ({
           <h2 style={{ ...titleStyle, fontSize: template.style.fontSize.subtitle, marginBottom: '0.5rem' }}>
             STATEMENT OF RESULT
           </h2>
-          <p style={subtitleStyle}>{session} Academic Session - {term} Term</p>
+          {(session || term) && (
+            <p style={subtitleStyle}>
+              {session && `${session} Academic Session`}
+              {session && term && " - "}
+              {term && `${term}`}
+            </p>
+          )}
         </div>
       </div>
 
@@ -338,13 +344,15 @@ export const CustomizableStatementOfResult = ({
               {position} out of {totalStudents}
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <Calendar className="w-4 h-4" style={{ color: customization.colors.primary }} />
-            <span className="font-semibold min-w-[100px]" style={{ ...bodyStyle, fontWeight: template.style.fontWeights.body }}>
-              Date Issued:
-            </span>
-            <span style={bodyStyle}>{dateIssued}</span>
-          </div>
+          {dateIssued && (
+            <div className="flex items-center gap-3">
+              <Calendar className="w-4 h-4" style={{ color: customization.colors.primary }} />
+              <span className="font-semibold min-w-[100px]" style={{ ...bodyStyle, fontWeight: template.style.fontWeights.body }}>
+                Date Issued:
+              </span>
+              <span style={bodyStyle}>{dateIssued}</span>
+            </div>
+          )}
         </div>
       </div>
 

@@ -322,12 +322,11 @@ export const CertificateGenerator = () => {
               term={schoolInfo?.term ? `${schoolInfo.term} Term` : ""}
               position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
               totalStudents={students.length}
-              schoolName={schoolInfo?.name || ""}
-              schoolAddress={schoolInfo?.address || ""}
-              schoolContact=""
+              schoolName={schoolInfo?.name}
+              schoolAddress={schoolInfo?.address}
               schoolLogo={schoolInfo?.logo}
               subjects={subjects}
-              dateIssued={schoolInfo?.dateOfIssuance || ""}
+              dateIssued={schoolInfo?.dateOfIssuance}
               resultRemark={schoolInfo?.resultRemark}
               signatories={schoolInfo?.signatories?.statementOfResult}
               template={selectedStatementTemplate}
@@ -339,16 +338,15 @@ export const CertificateGenerator = () => {
               className={currentStudent.class}
               serialNumber={currentStudent.serialNumber}
               regNumber={currentStudent.regNumber}
-              session={schoolInfo?.session || ""}
-              term={schoolInfo?.term ? `${schoolInfo.term} Term` : ""}
+              session={schoolInfo?.session}
+              term={schoolInfo?.term ? `${schoolInfo.term} Term` : undefined}
               position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
               totalStudents={students.length}
-              schoolName={schoolInfo?.name || ""}
-              schoolAddress={schoolInfo?.address || ""}
-              schoolContact=""
+              schoolName={schoolInfo?.name}
+              schoolAddress={schoolInfo?.address}
               schoolLogo={schoolInfo?.logo}
               subjects={subjects}
-              dateIssued={schoolInfo?.dateOfIssuance || ""}
+              dateIssued={schoolInfo?.dateOfIssuance}
               resultRemark={schoolInfo?.resultRemark}
               signatories={schoolInfo?.signatories?.statementOfResult}
             />
@@ -357,17 +355,16 @@ export const CertificateGenerator = () => {
           <Certificate
             studentName={currentStudent.name}
             className={currentStudent.class}
-            session={schoolInfo?.session || ""}
-            term={schoolInfo?.term ? `${schoolInfo.term} Term` : ""}
+            session={schoolInfo?.session}
+            term={schoolInfo?.term ? `${schoolInfo.term} Term` : undefined}
             position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
             totalStudents={students.length}
-            schoolName={schoolInfo?.name || ""}
-            schoolAddress={schoolInfo?.address || ""}
-            schoolContact=""
+            schoolName={schoolInfo?.name}
+            schoolAddress={schoolInfo?.address}
             schoolLogo={schoolInfo?.logo}
             averageScore={averageScore}
             overallGrade={getGradeFromAverage(averageScore)}
-            dateIssued={schoolInfo?.dateOfIssuance || ""}
+            dateIssued={schoolInfo?.dateOfIssuance}
             resultRemark={schoolInfo?.resultRemark}
             signatories={schoolInfo?.signatories?.certificate}
           />
@@ -375,17 +372,16 @@ export const CertificateGenerator = () => {
           <CustomizableCertificate
             studentName={currentStudent.name}
             className={currentStudent.class}
-            session={schoolInfo?.session || ""}
-            term={schoolInfo?.term ? `${schoolInfo.term} Term` : ""}
+            session={schoolInfo?.session}
+            term={schoolInfo?.term ? `${schoolInfo.term} Term` : undefined}
             position={`${currentStudentIndex + 1}${getOrdinalSuffix(currentStudentIndex + 1)}`}
             totalStudents={students.length}
-            schoolName={schoolInfo?.name || ""}
-            schoolAddress={schoolInfo?.address || ""}
-            schoolContact=""
+            schoolName={schoolInfo?.name}
+            schoolAddress={schoolInfo?.address}
             schoolLogo={schoolInfo?.logo}
             averageScore={averageScore}
             overallGrade={getGradeFromAverage(averageScore)}
-            dateIssued={schoolInfo?.dateOfIssuance || ""}
+            dateIssued={schoolInfo?.dateOfIssuance}
             resultRemark={schoolInfo?.resultRemark}
             signatories={schoolInfo?.signatories?.certificate}
             template={selectedTemplate}

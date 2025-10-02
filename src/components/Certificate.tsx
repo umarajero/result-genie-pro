@@ -3,17 +3,17 @@ import { Award, GraduationCap, Users, Medal } from "lucide-react";
 interface CertificateProps {
   studentName: string;
   className: string;
-  session: string;
-  term: string;
+  session?: string;
+  term?: string;
   position: string;
   totalStudents: number;
-  schoolName: string;
-  schoolAddress: string;
-  schoolContact: string;
+  schoolName?: string;
+  schoolAddress?: string;
+  schoolContact?: string;
   schoolLogo?: string;
   averageScore: number;
   overallGrade: string;
-  dateIssued: string;
+  dateIssued?: string;
   resultRemark?: string;
   signatories?: {
     classTeacher?: string;
@@ -74,11 +74,13 @@ export const Certificate = ({
         </div>
         <div className="bg-gradient-subtle p-4 rounded-lg">
           <h2 className="text-2xl font-bold text-foreground mb-2">CERTIFICATE OF ACHIEVEMENT</h2>
-          <p className="text-primary font-medium">
-            {session && `${session} Academic Session`}
-            {session && term && " - "}
-            {term && `${term}`}
-          </p>
+          {(session || term) && (
+            <p className="text-primary font-medium">
+              {session && `${session} Academic Session`}
+              {session && term && " - "}
+              {term && `${term}`}
+            </p>
+          )}
         </div>
       </div>
 
@@ -100,7 +102,7 @@ export const Certificate = ({
           </div>
 
           <p className="text-lg text-foreground max-w-2xl mx-auto leading-relaxed">
-            has successfully completed {term && `the ${term}`}{term && session && " of the "}{session && `${session} academic session`} with distinction and outstanding performance.
+            has successfully completed{term ? ` the ${term}` : ""}{term && session ? " of the " : ""}{session ? ` ${session} academic session` : " their studies"} with distinction and outstanding performance.
           </p>
 
           {/* Achievement details */}

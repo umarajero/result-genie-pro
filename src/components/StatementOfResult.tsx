@@ -5,20 +5,20 @@ interface StatementOfResultProps {
   className: string;
   serialNumber?: string;
   regNumber?: string;
-  session: string;
-  term: string;
+  session?: string;
+  term?: string;
   position: string;
   totalStudents: number;
-  schoolName: string;
-  schoolAddress: string;
-  schoolContact: string;
+  schoolName?: string;
+  schoolAddress?: string;
+  schoolContact?: string;
   schoolLogo?: string;
   subjects: Array<{
     name: string;
     score: number;
     grade: string;
   }>;
-  dateIssued: string;
+  dateIssued?: string;
   resultRemark?: string;
   signatories?: {
     classTeacher?: string;
@@ -90,11 +90,13 @@ export const StatementOfResult = ({
         </div>
         <div className="bg-gradient-subtle p-4 rounded-lg">
           <h2 className="text-2xl font-bold text-foreground mb-2">STATEMENT OF RESULT</h2>
-          <p className="text-primary font-medium">
-            {session && `${session} Academic Session`}
-            {session && term && " - "}
-            {term && `${term}`}
-          </p>
+          {(session || term) && (
+            <p className="text-primary font-medium">
+              {session && `${session} Academic Session`}
+              {session && term && " - "}
+              {term && `${term}`}
+            </p>
+          )}
         </div>
       </div>
 

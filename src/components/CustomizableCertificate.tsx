@@ -4,17 +4,17 @@ import { CertificateTemplate, TemplateCustomization } from '@/types/certificateT
 interface CustomizableCertificateProps {
   studentName: string;
   className: string;
-  session: string;
-  term: string;
+  session?: string;
+  term?: string;
   position: string;
   totalStudents: number;
-  schoolName: string;
-  schoolAddress: string;
-  schoolContact: string;
+  schoolName?: string;
+  schoolAddress?: string;
+  schoolContact?: string;
   schoolLogo?: string;
   averageScore: number;
   overallGrade: string;
-  dateIssued: string;
+  dateIssued?: string;
   resultRemark?: string;
   signatories?: {
     classTeacher?: string;
@@ -269,12 +269,12 @@ export const CustomizableCertificate = ({
         {template.layout.headerLayout === 'split' ? (
           <div className="flex justify-between items-center">
             <div>
-              <h1 style={titleStyle}>{schoolName}</h1>
+              <h1 style={titleStyle}>{schoolName || "—"}</h1>
               {schoolAddress && <p style={bodyStyle}>{schoolAddress}</p>}
             </div>
             {schoolLogo && (
               <div className="w-20 h-20 flex items-center justify-center bg-muted rounded-full overflow-hidden border-2" style={{ borderColor: customization.colors.primary }}>
-                <img src={schoolLogo} alt={`${schoolName} Logo`} className="w-full h-full object-contain" />
+                <img src={schoolLogo} alt={`${schoolName || "School"} Logo`} className="w-full h-full object-contain" />
               </div>
             )}
           </div>
@@ -283,11 +283,11 @@ export const CustomizableCertificate = ({
             {schoolLogo && template.layout.logoPosition === 'top' && (
               <div className="flex justify-center mb-4">
                 <div className="w-20 h-20 flex items-center justify-center bg-muted rounded-full overflow-hidden border-2" style={{ borderColor: customization.colors.primary }}>
-                  <img src={schoolLogo} alt={`${schoolName} Logo`} className="w-full h-full object-contain" />
+                  <img src={schoolLogo} alt={`${schoolName || "School"} Logo`} className="w-full h-full object-contain" />
                 </div>
               </div>
             )}
-            <h1 style={titleStyle}>{schoolName}</h1>
+            <h1 style={titleStyle}>{schoolName || "—"}</h1>
             {schoolAddress && <p style={bodyStyle}>{schoolAddress}</p>}
           </div>
         )}
@@ -296,7 +296,13 @@ export const CustomizableCertificate = ({
           <h2 style={{ ...titleStyle, fontSize: template.style.fontSize.subtitle, marginBottom: '0.5rem' }}>
             CERTIFICATE OF ACHIEVEMENT
           </h2>
-          <p style={subtitleStyle}>{session} Academic Session - {term} Term</p>
+          {(session || term) && (
+            <p style={subtitleStyle}>
+              {session && `${session} Academic Session`}
+              {session && term && " - "}
+              {term && `${term}`}
+            </p>
+          )}
         </div>
       </div>
 
@@ -345,8 +351,7 @@ export const CustomizableCertificate = ({
               margin: template.style.spacing.margins
             }}
           >
-            has successfully completed the <strong>{term}</strong> term of the <strong>{session}</strong> academic session 
-            with distinction and outstanding performance.
+            has successfully completed{term ? ` the ${term}` : ""}{term && session ? " of the " : ""}{session ? ` ${session} academic session` : " their studies"} with distinction and outstanding performance.
           </p>
 
           {/* Achievement details */}
@@ -394,9 +399,11 @@ export const CustomizableCertificate = ({
             </div>
           </div>
 
-          <p style={{ ...bodyStyle, fontSize: template.style.fontSize.body }}>
-            Awarded on this <strong>{dateIssued}</strong> in recognition of academic excellence and dedication to learning.
-          </p>
+          {dateIssued && (
+            <p style={{ ...bodyStyle, fontSize: template.style.fontSize.body }}>
+              Awarded on this <strong>{dateIssued}</strong> in recognition of academic excellence and dedication to learning.
+            </p>
+          )}
 
           {/* Result Remark */}
           {resultRemark && (

@@ -61,7 +61,7 @@ export const Header = () => {
             <img 
               src="/src/assets/ChatGPT Image Sep 18, 2025, 04_58_51 PM.png" 
               alt="ResultGenie Logo"
-              className="h-8 w-auto"
+              className="h-12 sm:h-14 md:h-16 lg:h-20 w-auto"
             />
           </div>
 

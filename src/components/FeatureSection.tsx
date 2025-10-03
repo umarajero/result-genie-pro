@@ -231,8 +231,8 @@ export const FeatureSection = () => {
             <Card className="bg-gradient-achievement border-0">
               <CardContent className="p-6 text-center">
                 <Users className="w-8 h-8 mx-auto mb-3 text-secondary-foreground/80" />
-                <div className="text-3xl font-bold mb-2 text-secondary-foreground">1000+</div>
-                <div className="text-secondary-foreground/80">Schools Trust Us</div>
+                <div className="text-3xl font-bold mb-2 text-secondary-foreground">1000+ Schools</div>
+                <div className="text-secondary-foreground/80">Goal</div>
               </CardContent>
             </Card>
             

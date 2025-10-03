@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -81,6 +81,51 @@ export const SchoolInfoForm = () => {
     });
   };
 
+  // ensure type changes enforce document generation rules and clear irrelevant signatories
+  const handleTypeChange = (value: "School" | "Institution") => {
+    if (value === "School") {
+      setSchoolInfo({
+        ...(schoolInfo || {}),
+        type: "School",
+        // enable both documents by default for School
+        generateStatementOfResult: true,
+        generateCertificate: true,
+        // ensure signatories keys exist
+        signatories: {
+          ...schoolInfo?.signatories,
+          statementOfResult: schoolInfo?.signatories?.statementOfResult ?? {
+            signatoryType: 'none',
+            classTeacher: "",
+            headTeacher: ""
+          },
+          certificate: schoolInfo?.signatories?.certificate ?? {
+            signatoryType: 'none',
+            classTeacher: "",
+            headTeacher: ""
+          }
+        }
+      });
+    } else {
+      // Institution: only certificate generation allowed
+      setSchoolInfo({
+        ...(schoolInfo || {}),
+        type: "Institution",
+        generateStatementOfResult: false,
+        generateCertificate: true,
+        // remove/clear statement of result signatories since it's not applicable
+        signatories: {
+          ...schoolInfo?.signatories,
+          statementOfResult: undefined,
+          certificate: schoolInfo?.signatories?.certificate ?? {
+            signatoryType: 'none',
+            instructor: "",
+            headOfInstitution: ""
+          }
+        }
+      });
+    }
+  };
+
   const handleSignatoryTypeChange = (
     documentType: 'statementOfResult' | 'certificate',
     signatoryType: string
@@ -93,10 +138,19 @@ export const SchoolInfoForm = () => {
         ...schoolInfo?.signatories,
         [documentType]: {
           signatoryType: signatoryType === 'none' ? undefined : signatoryType,
-          classTeacher: "",
-          headTeacher: "",
-          instructor: "",
-          headOfInstitution: ""
+          // keep relevant fields for each document type and clear others
+          classTeacher: documentType === 'statementOfResult' || (documentType === 'certificate' && schoolInfo?.type === 'School')
+            ? (signatoryType === 'none' ? "" : "")
+            : undefined,
+          headTeacher: documentType === 'statementOfResult' || (documentType === 'certificate' && schoolInfo?.type === 'School')
+            ? (signatoryType === 'none' ? "" : "")
+            : undefined,
+          instructor: documentType === 'certificate' && isInstitution
+            ? (signatoryType === 'none' ? "" : "")
+            : undefined,
+          headOfInstitution: documentType === 'certificate' && isInstitution
+            ? (signatoryType === 'none' ? "" : "")
+            : undefined
         }
       }
     });
@@ -122,6 +176,32 @@ export const SchoolInfoForm = () => {
   const isSchool = schoolInfo?.type === 'School';
   const isInstitution = schoolInfo?.type === 'Institution';
 
+  // Initialize default schoolInfo to 'School' on first render if not set,
+  // so the dropdown and conditional fields remain consistent.
+  useEffect(() => {
+    if (!schoolInfo) {
+      setSchoolInfo({
+        type: 'School',
+        generateStatementOfResult: true,
+        generateCertificate: true,
+        signatories: {
+          statementOfResult: {
+            signatoryType: undefined,
+            classTeacher: "",
+            headTeacher: "",
+          },
+          certificate: {
+            signatoryType: undefined,
+            classTeacher: "",
+            headTeacher: "",
+          },
+        },
+      });
+    }
+    // run only once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <section className="py-12 bg-background">
       <div className="container mx-auto px-4">
@@ -143,7 +223,7 @@ export const SchoolInfoForm = () => {
                 <Label htmlFor="institution-type">School or Institution *</Label>
                 <Select
                   value={schoolInfo?.type || "School"}
-                  onValueChange={(value) => handleSchoolInfoChange('type', value)}
+                  onValueChange={(value) => handleTypeChange(value as "School" | "Institution")}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
@@ -153,6 +233,39 @@ export const SchoolInfoForm = () => {
                     <SelectItem value="Institution">Institution</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* Documents generation toggles - behavior enforced by type */}
+              <div className="space-y-2">
+                <Label>Documents to Generate</Label>
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={!!schoolInfo?.generateStatementOfResult}
+                      onChange={(e) => setSchoolInfo({
+                        ...(schoolInfo || {}),
+                        generateStatementOfResult: e.target.checked
+                      })}
+                      disabled={isInstitution}
+                    />
+                    <span className={isInstitution ? "opacity-50" : ""}>Statement of Result</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={!!schoolInfo?.generateCertificate}
+                      onChange={(e) => setSchoolInfo({
+                        ...(schoolInfo || {}),
+                        generateCertificate: e.target.checked
+                      })}
+                    />
+                    <span>Certificate</span>
+                  </label>
+                </div>
+                {isInstitution && (
+                  <p className="text-xs text-muted-foreground">Institutions can only generate Certificates.</p>
+                )}
               </div>
 
               {/* School/Institution Name */}
@@ -209,9 +322,9 @@ export const SchoolInfoForm = () => {
                         <SelectValue placeholder="Select term" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="First Term">First Term</SelectItem>
-                        <SelectItem value="Second Term">Second Term</SelectItem>
-                        <SelectItem value="Third Term">Third Term</SelectItem>
+                        <SelectItem value="First ">First Term</SelectItem>
+                        <SelectItem value="Second ">Second Term</SelectItem>
+                        <SelectItem value="Third ">Third Term</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -232,17 +345,17 @@ export const SchoolInfoForm = () => {
               )}
 
               {/* Result Remark */}
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="result-remark">Result Remark</Label>
                 <Textarea
                   id="result-remark"
-                  placeholder="Enter result remark or achievements (e.g., 'Excellent performance', 'Outstanding achievement', etc.)"
+                  placeholder="Enter result remark or achievements (e.g., 'Excellent performance')"
                   value={schoolInfo?.resultRemark || ""}
                   onChange={(e) => handleSchoolInfoChange('resultRemark', e.target.value)}
                   className="w-full resize-none"
                   rows={3}
                 />
-              </div>
+              </div> */}
 
               {/* Logo Upload */}
               <div className="space-y-2">
@@ -335,7 +448,7 @@ export const SchoolInfoForm = () => {
                 </div>
                 
                 {/* Statement of Result Signatories - Only for Schools */}
-                {isSchool && (
+                {isSchool && schoolInfo?.generateStatementOfResult && (
                   <div className="space-y-4 p-4 bg-muted rounded-lg">
                     <div className="flex items-center gap-2 mb-3">
                       <FileText className="w-4 h-4 text-primary" />
@@ -394,112 +507,114 @@ export const SchoolInfoForm = () => {
                 )}
 
                 {/* Certificate Signatories */}
-                <div className="space-y-4 p-4 bg-muted rounded-lg">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Award className="w-4 h-4 text-primary" />
-                    <Label className="font-medium">Certificate Signatory</Label>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Signatory Type</Label>
-                      <Select
-                        value={schoolInfo?.signatories?.certificate?.signatoryType || 'none'}
-                        onValueChange={(value) => handleSignatoryTypeChange('certificate', value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select signatory type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">Select signatory type</SelectItem>
-                          {isSchool && (
-                            <>
-                              <SelectItem value="Class Teacher">Class Teacher</SelectItem>
-                              <SelectItem value="Head Teacher">Head Teacher</SelectItem>
-                              <SelectItem value="Both">Both</SelectItem>
-                            </>
-                          )}
-                          {isInstitution && (
-                            <>
-                              <SelectItem value="Instructor Name">Instructor Name</SelectItem>
-                              <SelectItem value="Head of Institution Name">Head of Institution Name</SelectItem>
-                              <SelectItem value="Both">Both</SelectItem>
-                            </>
-                          )}
-                        </SelectContent>
-                      </Select>
+                {schoolInfo?.generateCertificate && (
+                  <div className="space-y-4 p-4 bg-muted rounded-lg">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Award className="w-4 h-4 text-primary" />
+                      <Label className="font-medium">Certificate Signatory</Label>
                     </div>
-                    
-                    {/* School Certificate Signatories */}
-                    {isSchool && (
-                      <>
-                        {(schoolInfo?.signatories?.certificate?.signatoryType === 'Class Teacher' || 
-                          schoolInfo?.signatories?.certificate?.signatoryType === 'Both') && (
-                          <div className="space-y-2">
-                            <Label htmlFor="certificate-class-teacher">Class Teacher Name</Label>
-                            <Input
-                              id="certificate-class-teacher"
-                              type="text"
-                              placeholder="Enter class teacher's name"
-                              value={schoolInfo?.signatories?.certificate?.classTeacher || ""}
-                              onChange={(e) => handleSignatoryNameChange('certificate', 'classTeacher', e.target.value)}
-                              className="w-full"
-                            />
-                          </div>
-                        )}
-                        
-                        {(schoolInfo?.signatories?.certificate?.signatoryType === 'Head Teacher' || 
-                          schoolInfo?.signatories?.certificate?.signatoryType === 'Both') && (
-                          <div className="space-y-2">
-                            <Label htmlFor="certificate-head-teacher">Head Teacher Name</Label>
-                            <Input
-                              id="certificate-head-teacher"
-                              type="text"
-                              placeholder="Enter head teacher's name"
-                              value={schoolInfo?.signatories?.certificate?.headTeacher || ""}
-                              onChange={(e) => handleSignatoryNameChange('certificate', 'headTeacher', e.target.value)}
-                              className="w-full"
-                            />
-                          </div>
-                        )}
-                      </>
-                    )}
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Signatory Type</Label>
+                        <Select
+                          value={schoolInfo?.signatories?.certificate?.signatoryType || 'none'}
+                          onValueChange={(value) => handleSignatoryTypeChange('certificate', value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select signatory type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Select signatory type</SelectItem>
+                            {isSchool && (
+                              <>
+                                <SelectItem value="Class Teacher">Class Teacher</SelectItem>
+                                <SelectItem value="Head Teacher">Head Teacher</SelectItem>
+                                <SelectItem value="Both">Both</SelectItem>
+                              </>
+                            )}
+                            {isInstitution && (
+                              <>
+                                <SelectItem value="Instructor Name">Instructor Name</SelectItem>
+                                <SelectItem value="Head of Institution Name">Head of Institution Name</SelectItem>
+                                <SelectItem value="Both">Both</SelectItem>
+                              </>
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {/* School Certificate Signatories */}
+                      {isSchool && (
+                        <>
+                          {(schoolInfo?.signatories?.certificate?.signatoryType === 'Class Teacher' || 
+                            schoolInfo?.signatories?.certificate?.signatoryType === 'Both') && (
+                            <div className="space-y-2">
+                              <Label htmlFor="certificate-class-teacher">Class Teacher Name</Label>
+                              <Input
+                                id="certificate-class-teacher"
+                                type="text"
+                                placeholder="Enter class teacher's name"
+                                value={schoolInfo?.signatories?.certificate?.classTeacher || ""}
+                                onChange={(e) => handleSignatoryNameChange('certificate', 'classTeacher', e.target.value)}
+                                className="w-full"
+                              />
+                            </div>
+                          )}
+                          
+                          {(schoolInfo?.signatories?.certificate?.signatoryType === 'Head Teacher' || 
+                            schoolInfo?.signatories?.certificate?.signatoryType === 'Both') && (
+                            <div className="space-y-2">
+                              <Label htmlFor="certificate-head-teacher">Head Teacher Name</Label>
+                              <Input
+                                id="certificate-head-teacher"
+                                type="text"
+                                placeholder="Enter head teacher's name"
+                                value={schoolInfo?.signatories?.certificate?.headTeacher || ""}
+                                onChange={(e) => handleSignatoryNameChange('certificate', 'headTeacher', e.target.value)}
+                                className="w-full"
+                              />
+                            </div>
+                          )}
+                        </>
+                      )}
 
-                    {/* Institution Certificate Signatories */}
-                    {isInstitution && (
-                      <>
-                        {(schoolInfo?.signatories?.certificate?.signatoryType === 'Instructor Name' || 
-                          schoolInfo?.signatories?.certificate?.signatoryType === 'Both') && (
-                          <div className="space-y-2">
-                            <Label htmlFor="certificate-instructor">Instructor Name</Label>
-                            <Input
-                              id="certificate-instructor"
-                              type="text"
-                              placeholder="Enter instructor's name"
-                              value={schoolInfo?.signatories?.certificate?.instructor || ""}
-                              onChange={(e) => handleSignatoryNameChange('certificate', 'instructor', e.target.value)}
-                              className="w-full"
-                            />
-                          </div>
-                        )}
-                        
-                        {(schoolInfo?.signatories?.certificate?.signatoryType === 'Head of Institution Name' || 
-                          schoolInfo?.signatories?.certificate?.signatoryType === 'Both') && (
-                          <div className="space-y-2">
-                            <Label htmlFor="certificate-head-institution">Head of Institution Name</Label>
-                            <Input
-                              id="certificate-head-institution"
-                              type="text"
-                              placeholder="Enter head of institution's name"
-                              value={schoolInfo?.signatories?.certificate?.headOfInstitution || ""}
-                              onChange={(e) => handleSignatoryNameChange('certificate', 'headOfInstitution', e.target.value)}
-                              className="w-full"
-                            />
-                          </div>
-                        )}
-                      </>
-                    )}
+                      {/* Institution Certificate Signatories */}
+                      {isInstitution && (
+                        <>
+                          {(schoolInfo?.signatories?.certificate?.signatoryType === 'Instructor Name' || 
+                            schoolInfo?.signatories?.certificate?.signatoryType === 'Both') && (
+                            <div className="space-y-2">
+                              <Label htmlFor="certificate-instructor">Instructor Name</Label>
+                              <Input
+                                id="certificate-instructor"
+                                type="text"
+                                placeholder="Enter instructor's name"
+                                value={schoolInfo?.signatories?.certificate?.instructor || ""}
+                                onChange={(e) => handleSignatoryNameChange('certificate', 'instructor', e.target.value)}
+                                className="w-full"
+                              />
+                            </div>
+                          )}
+                          
+                          {(schoolInfo?.signatories?.certificate?.signatoryType === 'Head of Institution Name' || 
+                            schoolInfo?.signatories?.certificate?.signatoryType === 'Both') && (
+                            <div className="space-y-2">
+                              <Label htmlFor="certificate-head-institution">Head of Institution Name</Label>
+                              <Input
+                                id="certificate-head-institution"
+                                type="text"
+                                placeholder="Enter head of institution's name"
+                                value={schoolInfo?.signatories?.certificate?.headOfInstitution || ""}
+                                onChange={(e) => handleSignatoryNameChange('certificate', 'headOfInstitution', e.target.value)}
+                                className="w-full"
+                              />
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Status indicator */}

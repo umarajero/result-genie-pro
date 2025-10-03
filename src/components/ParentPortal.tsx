@@ -191,7 +191,7 @@ export const ParentPortal = () => {
                           onClick={() => handleSendSMS(student)}
                         >
                           <Phone className="w-4 h-4 mr-2" />
-                          Send SMS
+                          Send Email
                         </Button>
                       </div>
                     </div>
@@ -208,7 +208,7 @@ export const ParentPortal = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bell className="w-5 h-5" />
-                SMS Notifications
+                Email Notifications
                 {notifications.filter(n => !n.read).length > 0 && (
                   <Badge variant="destructive" className="ml-auto">
                     {notifications.filter(n => !n.read).length}
@@ -291,6 +291,7 @@ export const ParentPortal = () => {
                 term="First Term"
                 position="1st"
                 totalStudents={students.length}
+                students={students}
                 schoolName={schoolInfo?.name || ""}
                 schoolAddress={schoolInfo?.address || ""}
                 schoolContact=""

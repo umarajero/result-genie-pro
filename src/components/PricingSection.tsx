@@ -432,7 +432,7 @@ export const PricingSection = () => {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="text-white border-white/30 hover:bg-white/10"
+                  className="text-white bg-[#1E9272] border-[#1E9272] hover:bg-[#16755e]"
                   onClick={() => toast({
                     title: "Demo Scheduled",
                     description: "We'll reach out to schedule a personalized demo.",

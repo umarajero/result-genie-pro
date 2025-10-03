@@ -3,6 +3,7 @@ import { GraduationCap, Upload, Award, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DemoModal } from "./DemoModal";
 import { useState } from "react";
+import HeroEducation from "../assets/hero-education.jpg"
 
 export const HeroSection = () => {
   const { toast } = useToast();
@@ -35,14 +36,15 @@ export const HeroSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
           <div className="text-white space-y-8 relative z-20">
             {/* Large ResultGenie Logo */}
-            <div className="flex justify-center lg:justify-start mb-6">
-              <img 
-                src="/resultgenie-new-logo.png" 
-                alt="ResultGenie Logo"
-                className="h-32 w-auto lg:h-40 object-contain"
+            <div className="mb-6 w-full">
+              <img
+                src={HeroEducation}
+                alt="Hero"
+                className="w-screen max-w-none h-auto object-cover ml-[calc(50%_-_50vw)]"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = "/resultgenie-logo.png";
+                  // fallback: hide image on error
+                  target.style.display = 'none';
                 }}
               />
             </div>

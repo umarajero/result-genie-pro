@@ -7,17 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { useStudentData } from '@/hooks/useStudentData';
 import { StatementOfResult } from './StatementOfResult';
 import { Certificate } from './Certificate';
-import {
-  Search,
-  MessageSquare,
-  Download,
-  Eye,
-  Mail,
-  Calendar,
-  Award,
-  Bell,
-  Loader2
-} from 'lucide-react';
+import { Search, MessageSquare, Download, Eye, Mail, Calendar, Award, Bell, Loader as Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { generatePDFFromElement } from '@/lib/pdfGenerator';

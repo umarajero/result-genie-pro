@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,103 +7,73 @@ import { Badge } from '@/components/ui/badge';
 import { useStudentData } from '@/hooks/useStudentData';
 import { StatementOfResult } from './StatementOfResult';
 import { Certificate } from './Certificate';
-import { Search, MessageSquare, Download, Eye, Mail, Calendar, Award, Bell, Loader as Loader2 } from 'lucide-react';
+import { 
+  Search, 
+  MessageSquare, 
+  Download, 
+  Eye, 
+  Phone,
+  Mail,
+  Calendar,
+  Award,
+  Bell
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { generatePDFFromElement } from '@/lib/pdfGenerator';
 
 export const ParentPortal = () => {
-  const { students, schoolInfo, uploadedFileName } = useStudentData();
+  const { students, schoolInfo } = useStudentData();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [showCertificate, setShowCertificate] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [sendingEmail, setSendingEmail] = useState<string | null>(null);
-  const certificateRef = useRef<HTMLDivElement>(null);
+  const [notifications, setNotifications] = useState([]);
   const { toast } = useToast();
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSendEmail = async (student: any) => {
-    if (!uploadedFileName) {
-      toast({
-        title: "No Document Uploaded",
-        description: "Please upload a result document first.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!student.email) {
-      toast({
-        title: "Email Not Found",
-        description: `No valid email address found for ${student.name}.`,
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setSendingEmail(student.id);
-
+  const handleSendSMS = async (student: any) => {
     try {
-      setSelectedStudent(student);
-      setShowCertificate(true);
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      if (!certificateRef.current) {
-        throw new Error("Certificate element not found");
-      }
-
-      const pdfBase64 = await generatePDFFromElement(certificateRef.current);
-
-      const { data, error } = await supabase.functions.invoke('send-result-email', {
+      // Call edge function to send SMS
+      const { data, error } = await supabase.functions.invoke('send-parent-notification', {
         body: {
           studentName: student.name,
-          studentEmail: student.email,
-          pdfBase64: pdfBase64,
-          documentType: 'statement'
+          parentPhone: '+1234567890', // This would come from student data
+          results: student.subjects,
+          averageScore: student.averageScore
         }
       });
 
       if (error) throw error;
 
       toast({
-        title: "Email Sent Successfully",
-        description: `Result sent to ${student.email}`,
+        title: "SMS Sent Successfully",
+        description: `Notification sent to parent of ${student.name}`,
       });
 
+      // Add to notifications
       const newNotification = {
         id: notifications.length + 1,
-        type: 'email',
-        message: `Result email sent to ${student.name} at ${student.email}`,
+        type: 'sms',
+        message: `Results notification sent for ${student.name}`,
         timestamp: new Date().toLocaleString(),
         read: false
       };
       setNotifications([newNotification, ...notifications]);
 
-      setShowCertificate(false);
-      setSelectedStudent(null);
-
     } catch (error) {
-      console.error('Email send error:', error);
       toast({
-        title: "Failed to Send Email",
-        description: error instanceof Error ? error.message : "Please try again.",
+        title: "Failed to Send SMS",
+        description: "Please check your SMS configuration and try again.",
         variant: "destructive"
       });
-      setShowCertificate(false);
-      setSelectedStudent(null);
-    } finally {
-      setSendingEmail(null);
     }
   };
 
   const markAsRead = (id: number) => {
-    setNotifications(prev =>
-      prev.map(notif =>
+    setNotifications(prev => 
+      prev.map(notif => 
         notif.id === id ? { ...notif, read: true } : notif
       )
     );
@@ -137,7 +107,9 @@ export const ParentPortal = () => {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
+        {/* Student Search & Results */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Search */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -160,6 +132,7 @@ export const ParentPortal = () => {
             </CardContent>
           </Card>
 
+          {/* Student Results */}
           {filteredStudents.length > 0 && (
             <Card>
               <CardHeader>
@@ -173,13 +146,10 @@ export const ParentPortal = () => {
                         <div>
                           <h3 className="font-semibold">{student.name}</h3>
                           <p className="text-sm text-muted-foreground">{student.class}</p>
-                          {student.email && (
-                            <p className="text-xs text-muted-foreground mt-1">{student.email}</p>
-                          )}
                         </div>
                         <Badge variant="secondary">{student.grade}</Badge>
                       </div>
-
+                      
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <span className="text-muted-foreground">Average Score:</span>
@@ -218,14 +188,9 @@ export const ParentPortal = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleSendEmail(student)}
-                          disabled={sendingEmail === student.id}
+                          onClick={() => handleSendSMS(student)}
                         >
-                          {sendingEmail === student.id ? (
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          ) : (
-                            <Mail className="w-4 h-4 mr-2" />
-                          )}
+                          <Phone className="w-4 h-4 mr-2" />
                           Send Email
                         </Button>
                       </div>
@@ -237,6 +202,7 @@ export const ParentPortal = () => {
           )}
         </div>
 
+        {/* Notifications Panel */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -261,8 +227,8 @@ export const ParentPortal = () => {
                     <div
                       key={notification.id}
                       className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        notification.read
-                          ? 'bg-muted/20 border-border'
+                        notification.read 
+                          ? 'bg-muted/20 border-border' 
                           : 'bg-primary/5 border-primary/20'
                       }`}
                       onClick={() => markAsRead(notification.id)}
@@ -288,6 +254,7 @@ export const ParentPortal = () => {
         </div>
       </div>
 
+      {/* Certificate Modal */}
       {showCertificate && selectedStudent && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
@@ -316,25 +283,23 @@ export const ParentPortal = () => {
                   </Button>
                 </div>
               </div>
-
-              <div ref={certificateRef}>
-                <Certificate
-                  studentName={selectedStudent.name}
-                  className={selectedStudent.class}
-                  session={schoolInfo?.session || new Date().getFullYear().toString()}
-                  term="First Term"
-                  position="1st"
-                  totalStudents={students.length}
-                  students={students}
-                  schoolName={schoolInfo?.name || ""}
-                  schoolAddress={schoolInfo?.address || ""}
-                  schoolContact=""
-                  schoolLogo={schoolInfo?.logo}
-                  averageScore={selectedStudent.averageScore || 0}
-                  overallGrade={selectedStudent.grade || "F"}
-                  dateIssued={new Date().toLocaleDateString()}
-                />
-              </div>
+              
+              <Certificate
+                studentName={selectedStudent.name}
+                className={selectedStudent.class}
+                session={schoolInfo?.session || new Date().getFullYear().toString()}
+                term="First Term"
+                position="1st"
+                totalStudents={students.length}
+                students={students}
+                schoolName={schoolInfo?.name || ""}
+                schoolAddress={schoolInfo?.address || ""}
+                schoolContact=""
+                schoolLogo={schoolInfo?.logo}
+                averageScore={selectedStudent.averageScore || 0}
+                overallGrade={selectedStudent.grade || "F"}
+                dateIssued={new Date().toLocaleDateString()}
+              />
             </div>
           </div>
         </div>

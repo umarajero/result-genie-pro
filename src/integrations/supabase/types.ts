@@ -14,42 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      projects: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          name: string
-          school_info: Json
-          student_data: Json
-          updated_at: string | null
-          uploaded_file_name: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name: string
-          school_info?: Json
-          student_data?: Json
-          updated_at?: string | null
-          uploaded_file_name?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name?: string
-          school_info?: Json
-          student_data?: Json
-          updated_at?: string | null
-          uploaded_file_name?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       experts: {
         Row: {
           availability: string
@@ -110,6 +74,33 @@ export type Database = {
           total_reviews?: number | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      saved_works: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

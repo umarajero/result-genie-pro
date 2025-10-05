@@ -94,12 +94,10 @@ export const SchoolInfoForm = () => {
         signatories: {
           ...schoolInfo?.signatories,
           statementOfResult: schoolInfo?.signatories?.statementOfResult ?? {
-            signatoryType: 'none',
             classTeacher: "",
             headTeacher: ""
           },
           certificate: schoolInfo?.signatories?.certificate ?? {
-            signatoryType: 'none',
             classTeacher: "",
             headTeacher: ""
           }
@@ -117,7 +115,6 @@ export const SchoolInfoForm = () => {
           ...schoolInfo?.signatories,
           statementOfResult: undefined,
           certificate: schoolInfo?.signatories?.certificate ?? {
-            signatoryType: 'none',
             instructor: "",
             headOfInstitution: ""
           }

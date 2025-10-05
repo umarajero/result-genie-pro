@@ -6,6 +6,7 @@ export interface StudentRecord {
   class: string;
   serialNumber?: string;
   regNumber?: string;
+  email?: string;
   subjects: {
     [subject: string]: number;
   };
@@ -23,6 +24,8 @@ export interface SchoolInfo {
   dateOfIssuance?: string;
   logo?: string;
   resultRemark?: string;
+  generateStatementOfResult?: boolean;
+  generateCertificate?: boolean;
   signatories?: {
     statementOfResult?: {
       signatoryType?: 'Class Teacher' | 'Head Teacher' | 'Both';

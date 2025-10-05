@@ -365,7 +365,6 @@ export const CertificateGenerator = () => {
             averageScore={averageScore}
             overallGrade={getGradeFromAverage(averageScore)}
             dateIssued={schoolInfo?.dateOfIssuance}
-            resultRemark={schoolInfo?.resultRemark}
             signatories={schoolInfo?.signatories?.certificate}
             students={students}
           />
@@ -385,7 +384,6 @@ export const CertificateGenerator = () => {
             dateIssued={schoolInfo?.dateOfIssuance}
             resultRemark={schoolInfo?.resultRemark}
             signatories={schoolInfo?.signatories?.certificate}
-            students={students}
             template={selectedTemplate}
             customization={customization}
           />

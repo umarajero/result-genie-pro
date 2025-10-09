@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { sendResultEmail, validateEmail } from '@/services/emailService';
+import { Loader2 } from 'lucide-react';
 
 export const ParentPortal = () => {
   const { students, schoolInfo } = useStudentData();
@@ -27,47 +29,97 @@ export const ParentPortal = () => {
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [showCertificate, setShowCertificate] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null);
+  const certificateRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSendSMS = async (student: any) => {
+  const handleSendEmail = async (student: any) => {
+    if (!validateEmail(student.email)) {
+      toast({
+        title: "Invalid Email Address",
+        description: `No valid email address found for ${student.name}. Please ensure the uploaded file contains an "Email" column with valid email addresses.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSendingEmail(student.id);
+
     try {
-      // Call edge function to send SMS
-      const { data, error } = await supabase.functions.invoke('send-parent-notification', {
-        body: {
-          studentName: student.name,
-          parentPhone: '+1234567890', // This would come from student data
-          results: student.subjects,
-          averageScore: student.averageScore
-        }
+      const tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.width = '1200px';
+      document.body.appendChild(tempDiv);
+
+      const CertificateComponent = await import('./Certificate').then(m => m.Certificate);
+      const { createRoot } = await import('react-dom/client');
+      const root = createRoot(tempDiv);
+
+      await new Promise<void>((resolve) => {
+        root.render(
+          <CertificateComponent
+            studentName={student.name}
+            className={student.class}
+            session={schoolInfo?.session || new Date().getFullYear().toString()}
+            term={schoolInfo?.term || 'First Term'}
+            position="N/A"
+            totalStudents={students.length}
+            students={students}
+            schoolName={schoolInfo?.name || ""}
+            schoolAddress={schoolInfo?.address || ""}
+            schoolContact=""
+            schoolLogo={schoolInfo?.logo}
+            averageScore={student.averageScore || 0}
+            overallGrade={student.grade || "F"}
+            dateIssued={new Date().toLocaleDateString()}
+            signatories={schoolInfo?.signatories?.certificate}
+          />
+        );
+        setTimeout(resolve, 500);
       });
 
-      if (error) throw error;
+      const result = await sendResultEmail({
+        student,
+        schoolInfo,
+        documentType: 'certificate',
+        pdfElement: tempDiv,
+      });
+
+      root.unmount();
+      document.body.removeChild(tempDiv);
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       toast({
-        title: "SMS Sent Successfully",
-        description: `Notification sent to parent of ${student.name}`,
+        title: "Email Sent Successfully",
+        description: `Result sent to ${student.email}`,
       });
 
-      // Add to notifications
       const newNotification = {
         id: notifications.length + 1,
-        type: 'sms',
-        message: `Results notification sent for ${student.name}`,
+        type: 'email',
+        message: `Result emailed to ${student.name} at ${student.email}`,
         timestamp: new Date().toLocaleString(),
         read: false
       };
       setNotifications([newNotification, ...notifications]);
 
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Email send error:', error);
       toast({
-        title: "Failed to Send SMS",
-        description: "Please check your SMS configuration and try again.",
+        title: "Failed to Send Email",
+        description: error.message || "Please try again or check your email configuration.",
         variant: "destructive"
       });
+    } finally {
+      setSendingEmail(null);
     }
   };
 
@@ -188,10 +240,20 @@ export const ParentPortal = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleSendSMS(student)}
+                          onClick={() => handleSendEmail(student)}
+                          disabled={sendingEmail === student.id || !validateEmail(student.email)}
                         >
-                          <Phone className="w-4 h-4 mr-2" />
-                          Send Email
+                          {sendingEmail === student.id ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              <Mail className="w-4 h-4 mr-2" />
+                              Send Email
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>

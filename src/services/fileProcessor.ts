@@ -151,10 +151,14 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   );
   
   // Find REG No (Registration Number) column
-  const regNumberIndex = headers.findIndex(h => 
+  const regNumberIndex = headers.findIndex(h =>
     h.includes('reg') || h.includes('registration') || h.includes('regno') || h.includes('reg no') || h.includes('reg.no')
   );
-  
+
+  const emailIndex = headers.findIndex(h =>
+    h.includes('email') || h.includes('e-mail') || h.includes('mail')
+  );
+
   if (nameIndex === -1) {
     throw new Error('File must contain a column with student names (Name, Student Name, etc.)');
   }
@@ -208,13 +212,14 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   
   headers.forEach((header, index) => {
     const isIdColumn = idColumnPatterns.some(pattern => header.includes(pattern));
-    
-    if (index !== nameIndex && 
-        index !== classIndex && 
-        index !== serialNumberIndex && 
-        index !== regNumberIndex && 
+
+    if (index !== nameIndex &&
+        index !== classIndex &&
+        index !== serialNumberIndex &&
+        index !== regNumberIndex &&
+        index !== emailIndex &&
         !isIdColumn &&
-        header && 
+        header &&
         header.length > 0) {
       // Skip common non-subject columns
       const skipColumns = [
@@ -256,12 +261,13 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
   console.log('Subject columns INCLUDED in calculations:', subjectNames);
   console.log('Number of subjects for calculation:', subjectNames.length);
   
-  const excludedColumns = headers.filter((_, index) => 
-    !subjectIndices.includes(index) && 
-    index !== nameIndex && 
-    index !== classIndex && 
-    index !== serialNumberIndex && 
-    index !== regNumberIndex
+  const excludedColumns = headers.filter((_, index) =>
+    !subjectIndices.includes(index) &&
+    index !== nameIndex &&
+    index !== classIndex &&
+    index !== serialNumberIndex &&
+    index !== regNumberIndex &&
+    index !== emailIndex
   );
   console.log('=== EXCLUDED COLUMNS ===');
   console.log('All excluded columns:', excludedColumns);
@@ -301,6 +307,7 @@ const processRawData = (data: any[][]): { students: StudentRecord[], schoolInfo:
       class: classIndex !== -1 ? String(row[classIndex] || '') : '',
       serialNumber: serialNumberIndex !== -1 ? String(row[serialNumberIndex] || '') : undefined,
       regNumber: regNumberIndex !== -1 ? String(row[regNumberIndex] || '') : undefined,
+      email: emailIndex !== -1 ? String(row[emailIndex] || '').trim() : undefined,
       subjects,
       totalMarks,
       averageScore: Math.round(averageScore * 100) / 100,

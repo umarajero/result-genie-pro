@@ -21,7 +21,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { sendResultEmail, validateEmail } from '@/services/emailService';
-import { Loader2 } from 'lucide-react';
+import { Loader as Loader2 } from 'lucide-react';
 
 export const ParentPortal = () => {
   const { students, schoolInfo } = useStudentData();

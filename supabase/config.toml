@@ -49,3 +49,6 @@ enabled = true
 
 [functions.send-parent-notification]
 verify_jwt = false
+
+[functions.send-result-email]
+verify_jwt = true

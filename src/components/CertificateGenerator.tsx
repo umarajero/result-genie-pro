@@ -12,8 +12,9 @@ import { CustomizableStatementOfResult } from './CustomizableStatementOfResult';
 import { useStudentData } from '@/hooks/useStudentData';
 import { useTemplateCustomization } from '@/hooks/useTemplateCustomization';
 import { useStatementCustomization } from '@/hooks/useStatementCustomization';
-import { ChevronLeft, ChevronRight, Download, Users, Award, FileText, Medal } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Users, Award, FileText, Medal, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { sendResultEmail, validateEmail } from '@/services/emailService';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -32,6 +33,7 @@ export const CertificateGenerator = () => {
   const { selectedTemplate: selectedStatementTemplate, customization: statementCustomization } = useStatementCustomization();
   const [currentStudentIndex, setCurrentStudentIndex] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [activeTab, setActiveTab] = useState("statement");
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [showStatementTemplateSelector, setShowStatementTemplateSelector] = useState(false);
@@ -183,6 +185,50 @@ export const CertificateGenerator = () => {
     }
   };
 
+  const handleSendEmail = async () => {
+    if (!certificateRef.current || isSendingEmail) return;
+
+    // Validate email
+    if (!validateEmail(currentStudent.email)) {
+      toast({
+        title: "Invalid Email",
+        description: `No valid email address found for ${currentStudent.name}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      const documentType = activeTab === "statement" ? "statement" : "certificate";
+      
+      const result = await sendResultEmail({
+        student: currentStudent,
+        schoolInfo,
+        documentType,
+        pdfElement: certificateRef.current
+      });
+
+      if (result.success) {
+        toast({
+          title: "Email Sent",
+          description: `Result sent successfully to ${currentStudent.email}`,
+        });
+      } else {
+        throw new Error(result.error || "Failed to send email");
+      }
+    } catch (error: any) {
+      console.error('Error sending email:', error);
+      toast({
+        title: "Email Failed",
+        description: error.message || "There was an error sending the email. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -264,15 +310,23 @@ export const CertificateGenerator = () => {
                     setShowTemplateSelector(!showTemplateSelector);
                   }
                 }}
-                disabled={isDownloading}
+                disabled={isDownloading || isSendingEmail}
               >
                 <Award className="w-4 h-4 mr-2" />
                 {(activeTab === "statement" ? showStatementTemplateSelector : showTemplateSelector) ? 'Hide Templates' : 'Choose Template'}
               </Button>
               <Button
                 variant="outline"
+                onClick={handleSendEmail}
+                disabled={isDownloading || isSendingEmail || !validateEmail(currentStudent.email)}
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                {isSendingEmail ? 'Sending...' : 'Send Email'}
+              </Button>
+              <Button
+                variant="outline"
                 onClick={handleDownloadCertificate}
-                disabled={isDownloading}
+                disabled={isDownloading || isSendingEmail}
               >
                 <Download className="w-4 h-4 mr-2" />
                 {isDownloading ? 'Generating...' : 'Download This'}
@@ -280,7 +334,7 @@ export const CertificateGenerator = () => {
               <Button
                 variant="default"
                 onClick={handleDownloadAll}
-                disabled={isDownloading}
+                disabled={isDownloading || isSendingEmail}
               >
                 <Download className="w-4 h-4 mr-2" />
                 {isDownloading ? 'Generating...' : `Download All (${students.length})`}

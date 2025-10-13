@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { GraduationCap, Mail } from 'lucide-react';
+
+// Validation schemas
+const emailSchema = z.string()
+  .trim()
+  .email('Please enter a valid email address')
+  .max(255, 'Email must be less than 255 characters');
+
+const passwordSchema = z.string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(128, 'Password must be less than 128 characters')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number');
+
+const authSchema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
+});
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -49,11 +68,21 @@ const Auth = () => {
     setMessage(null);
 
     try {
+      // Validate input
+      const validation = authSchema.safeParse({ email, password });
+      
+      if (!validation.success) {
+        const firstError = validation.error.errors[0];
+        setMessage({ type: 'error', text: firstError.message });
+        setLoading(false);
+        return;
+      }
+
       const redirectUrl = `${window.location.origin}/`;
       
       const { error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: validation.data.email,
+        password: validation.data.password,
         options: {
           emailRedirectTo: redirectUrl
         }
@@ -80,8 +109,17 @@ const Auth = () => {
     setMessage(null);
 
     try {
+      // Validate email format (lighter validation for sign-in)
+      const emailValidation = emailSchema.safeParse(email);
+      
+      if (!emailValidation.success) {
+        setMessage({ type: 'error', text: emailValidation.error.errors[0].message });
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: emailValidation.data,
         password,
       });
 
@@ -171,12 +209,15 @@ const Auth = () => {
                     <Input
                       id="signup-password"
                       type="password"
-                      placeholder="Create a password"
+                      placeholder="Create a password (min 8 chars, uppercase, lowercase, number)"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      minLength={6}
+                      minLength={8}
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Must contain at least 8 characters with uppercase, lowercase, and number
+                    </p>
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? 'Creating account...' : 'Sign Up'}

@@ -48,7 +48,7 @@ external_phone_enabled = false
 enabled = true
 
 [functions.send-parent-notification]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-result-email]
 verify_jwt = true
